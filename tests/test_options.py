@@ -236,3 +236,67 @@ def test_a_failed_config_write_leaves_no_temp_file(tmp_path, monkeypatch):
     assert not list(tmp_path.glob("*.tmp")), "the failed write left a temp file"
     assert json.loads(target.read_text(encoding="utf-8")).get("good") == 1, \
         "the failed write must not damage the config that was there"
+
+
+def test_linux_runtime_paths_use_xdg_dirs(monkeypatch, tmp_path):
+    monkeypatch.setattr(options, "_IS_WINDOWS", False)
+    monkeypatch.setattr(options.sys, "platform", "linux")
+    data = tmp_path / "data"
+    cache = tmp_path / "cache"
+    state = tmp_path / "state"
+    monkeypatch.setenv("XDG_DATA_HOME", str(data))
+    monkeypatch.setenv("XDG_CACHE_HOME", str(cache))
+    monkeypatch.setenv("XDG_STATE_HOME", str(state))
+    monkeypatch.setattr(options.tempfile, "gettempdir", lambda: str(tmp_path / "tmp"))
+
+    assert Path(options.get_db_path()) == data / "AccessibleIPTVClient" / "epg.db"
+    assert Path(options.get_cache_dir()) == cache / "AccessibleIPTVClient" / "iptv_cache"
+    assert Path(options.get_logs_dir()) == state / "AccessibleIPTVClient" / "logs"
+
+
+def test_linux_runtime_paths_copy_legacy_temp_data(monkeypatch, tmp_path):
+    monkeypatch.setattr(options, "_IS_WINDOWS", False)
+    monkeypatch.setattr(options.sys, "platform", "linux")
+    data = tmp_path / "data"
+    cache = tmp_path / "cache"
+    state = tmp_path / "state"
+    legacy = tmp_path / "tmp"
+    legacy.mkdir()
+    monkeypatch.setenv("XDG_DATA_HOME", str(data))
+    monkeypatch.setenv("XDG_CACHE_HOME", str(cache))
+    monkeypatch.setenv("XDG_STATE_HOME", str(state))
+    monkeypatch.setattr(options.tempfile, "gettempdir", lambda: str(legacy))
+
+    (legacy / "epg.db").write_bytes(b"sqlite")
+    (legacy / "iptvclient_epg_debug.log").write_text("old log", encoding="utf-8")
+    old_cache = legacy / "iptv_cache"
+    old_cache.mkdir()
+    (old_cache / "playlist.m3u").write_text("#EXTM3U", encoding="utf-8")
+
+    db_path = Path(options.get_db_path())
+    cache_dir = Path(options.get_cache_dir())
+    log_path = Path(options.get_epg_log_path())
+
+    assert db_path.read_bytes() == b"sqlite"
+    assert (cache_dir / "playlist.m3u").read_text(encoding="utf-8") == "#EXTM3U"
+    assert log_path.read_text(encoding="utf-8") == "old log"
+    assert (legacy / "epg.db").exists(), "migration must copy, not delete, legacy data"
+
+
+def test_linux_runtime_paths_fall_back_to_temp_when_xdg_unavailable(monkeypatch, tmp_path):
+    monkeypatch.setattr(options, "_IS_WINDOWS", False)
+    monkeypatch.setattr(options.sys, "platform", "linux")
+    legacy = tmp_path / "tmp"
+    legacy.mkdir()
+    monkeypatch.setattr(options.tempfile, "gettempdir", lambda: str(legacy))
+
+    def refuse(*_args, **_kwargs):
+        raise OSError("read only")
+
+    monkeypatch.setattr(options, "_linux_data_dir", refuse)
+    monkeypatch.setattr(options, "_linux_cache_dir", refuse)
+    monkeypatch.setattr(options, "_linux_state_dir", refuse)
+
+    assert Path(options.get_db_path()) == legacy / "epg.db"
+    assert Path(options.get_cache_dir()) == legacy / "iptv_cache"
+    assert Path(options.get_logs_dir()) == legacy / "logs"
