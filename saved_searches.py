@@ -8,6 +8,7 @@ from pathlib import Path
 import re
 import sqlite3
 import tempfile
+import uuid
 import time
 import uuid
 
@@ -153,13 +154,40 @@ def normalize_seen(value, *, now=None):
     return dict(sorted(rows.items(), key=lambda item: item[1])[:MAX_SEEN])
 
 
+def _preserve_corrupt_seen(path):
+    backup = path + ".corrupt-" + uuid.uuid4().hex
+    try:
+        with open(path, "rb") as source, open(backup, "xb") as target:
+            while True:
+                chunk = source.read(1024 * 1024)
+                if not chunk:
+                    break
+                target.write(chunk)
+            target.flush()
+            os.fsync(target.fileno())
+    except OSError:
+        try:
+            os.remove(backup)
+        except OSError:
+            pass
+        raise
+    return backup
+
+
 def read_seen(path):
     if not os.path.exists(path):
         return {}
-    if os.path.getsize(path) > 4 * 1024 * 1024:
-        raise ValueError(_("The saved search history is damaged."))
-    with open(path, encoding="utf-8") as handle:
-        return normalize_seen(json.load(handle))
+    try:
+        if os.path.getsize(path) > 4 * 1024 * 1024:
+            raise ValueError(_("The saved search history is damaged."))
+        with open(path, encoding="utf-8") as handle:
+            return normalize_seen(json.load(handle))
+    except (OSError, ValueError, TypeError, json.JSONDecodeError):
+        # This file is notification history only; the saved-search rules live
+        # in the main config. Preserve the exact bytes before resetting so a
+        # corrupt auxiliary history cannot disable all saved searches forever.
+        _preserve_corrupt_seen(path)
+        return {}
 
 
 def commit_seen(path, old, results, *, now=None):
