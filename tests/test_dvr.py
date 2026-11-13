@@ -179,9 +179,27 @@ def test_a_schedule_file_with_a_bad_timestamp_does_not_break_startup(tmp_path):
 
     job = scheduler.get_job("job1")
     assert job is not None
-    assert job["status"] == dvr.STATUS_SCHEDULED
-    # The tick must survive it too.
+    assert job["status"] == dvr.STATUS_FAILED
+    assert job["message"] == "Invalid recording schedule."
+    # The tick must survive it too, and the malformed job must not re-arm.
     scheduler.tick()
+    assert scheduler.get_job("job1")["status"] == dvr.STATUS_FAILED
+
+
+def test_malformed_scheduled_job_is_failed_instead_of_staying_zombie(tmp_path):
+    schedule_path = tmp_path / "schedule.json"
+    schedule_path.write_text(json.dumps({"jobs": [
+        {"id": "job1", "status": dvr.STATUS_SCHEDULED, "start_ts": 1000,
+         "stop_ts": 900, "recording_id": None},
+    ]}), encoding="utf-8")
+
+    scheduler = dvr.DVRScheduler(
+        str(schedule_path), on_start=lambda job: 1, on_stop=lambda job: None
+    )
+
+    job = scheduler.get_job("job1")
+    assert job["status"] == dvr.STATUS_FAILED
+    assert job["message"] == "Invalid recording schedule."
 
 
 def test_scheduler_fails_interrupted_recording_whose_window_closed(tmp_path):
