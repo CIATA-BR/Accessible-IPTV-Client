@@ -43,7 +43,7 @@ msgstr "Já existe um marcador com este nome para este conteúdo."
 
 #: main.py:5737
 msgid "A download is still in progress.\n\nIf you exit now it will stop, and only the part captured so far is kept.\n\nExit anyway?"
-msgstr "Há umo download ou gravação em andamento.\n\nSe sair agora, ela será interrompida e apenas a parte já capturada será mantida.\n\nSair mesmo assim?"
+msgstr "Há um download ou uma gravação em andamento.\n\nSe você sair agora, a operação será interrompida e apenas a parte já capturada será mantida.\n\nDeseja sair mesmo assim?"
 
 #: favorite_collections.py:78
 msgid "A favourite list can contain at most 2000 channels."
@@ -60,7 +60,7 @@ msgstr "Já existe uma lista com este nome."
 
 #: main.py:5714
 msgid "A recording is in progress and {count} recording is still scheduled.\n\n{names}\n\nThe app must stay open to start them. Exit anyway?"
-msgstr "Está a decorrer uma gravação e {count} gravação continua agendada.\n\n{names}\n\nA aplicativo tem de permanecer aberta para a iniciar. Sair na mesma?"
+msgstr "Há uma gravação em andamento e {count} gravação ainda está agendada.\n\n{names}\n\nO aplicativo precisa permanecer aberto para iniciá-la. Deseja sair mesmo assim?"
 
 #: dvr.py:438
 msgid "A running recording's start time cannot be changed."
@@ -244,11 +244,11 @@ msgstr "Saída da voz do aplicativo: {name}"
 
 #: main.py:7772
 msgid "Application voice speed"
-msgstr "Velocidade da voz da aplicativo"
+msgstr "Velocidade da voz do aplicativo"
 
 #: client_ui.py:417
 msgid "Application voice speed..."
-msgstr "Velocidade da voz da aplicativo…"
+msgstr "Velocidade da voz do aplicativo…"
 
 #: main.py:7741
 msgid "Application voice volume"
@@ -664,7 +664,7 @@ msgstr "Verifique se as fontes de EPG em Arquivo > Gerenciador de EPG estão ace
 
 #: dialogs_misc.py:397
 msgid "Checking account, please wait..."
-msgstr "Verificando a conta, asalve..."
+msgstr "Verificando a conta, aguarde..."
 
 #: main.py:4948
 msgid "Checking for update details..."
@@ -833,7 +833,7 @@ msgstr "Copiar URL"
 
 #: main.py:7797
 msgid "Could not change the application voice speed."
-msgstr "Não foi possível alterar a velocidade da voz da aplicativo."
+msgstr "Não foi possível alterar a velocidade da voz do aplicativo."
 
 #: resume_dialogs.py:145
 msgid "Could not check availability."
@@ -1108,7 +1108,7 @@ msgstr "Transferência cancelada. O arquivo incompleto foi descartado."
 
 #: main.py:8657
 msgid "Download complete:\n{path}"
-msgstr "Download concluída:\n{path}"
+msgstr "Download concluído:\n{path}"
 
 #: main.py:8927
 msgid "Download details"
@@ -1405,7 +1405,7 @@ msgstr "Exportar configurações..."
 
 #: internal_player.py:2675
 msgid "External subtitle files are not synchronized with the local live buffer. Use the stream's embedded subtitles."
-msgstr "Os arquivos de legendas externos não estão sincronizados com a buffer local do direto. Utilize as legendas integradas na transmissão."
+msgstr "Os arquivos de legendas externos não estão sincronizados com o buffer local da transmissão ao vivo. Use as legendas integradas na transmissão."
 
 #: main.py:5017
 msgid "Extracting update..."
@@ -1739,7 +1739,7 @@ msgstr "Manter este dispositivo de saída?\n{name}"
 
 #: C:/forgejo-runner/work/0d9a583ddfbd6034/hostexecutor/client_timeshift.py:48
 msgid "Keep up to this many minutes of live TV (1–30); 0 disables the local buffer."
-msgstr "Conservar entre 1 e 30 minutos do direto; 0 desativa a buffer local."
+msgstr "Manter entre 1 e 30 minutos da transmissão ao vivo; 0 desativa o buffer local."
 
 #: main.py:2133
 #: main.py:2143
@@ -1882,7 +1882,7 @@ msgstr "Conexões máximas"
 
 #: C:/forgejo-runner/work/0d9a583ddfbd6034/hostexecutor/client_timeshift.py:66
 msgid "Maximum local buffer size per session (MiB). Old data is removed when either limit is reached."
-msgstr "Tamanho máximo da buffer por sessão (MiB). Os dados mais antigos são removidos ao atingir qualquer um dos limites."
+msgstr "Tamanho máximo do buffer por sessão (MiB). Os dados mais antigos são removidos ao atingir qualquer um dos limites."
 
 #: client_ui.py:179
 #: client_ui.py:335
@@ -2142,7 +2142,7 @@ msgstr "Nenhum programa no ar no momento."
 
 #: main.py:2872
 msgid "No programme guide has been imported yet, so there is nothing to schedule from.\n\nImport a guide first (File > EPG Manager, then File > Import EPG to DB), then try scheduling again."
-msgstr "Ainda não foi importada nenhum guia de programação, por isso não há nada para agendar.\n\nImporte primeiro um guia (Arquivo > Gerenciador de EPG, depois Arquivo > Importar EPG para a base de dados) e tente novamente."
+msgstr "Ainda não foi importado nenhum guia de programação, por isso não há nada para agendar.\n\nImporte primeiro um guia (Arquivo > Gerenciador de EPG, depois Arquivo > Importar EPG para a base de dados) e tente novamente."
 
 #: main.py:7016
 msgid "No programs are currently airing, or EPG data has not been imported yet."
@@ -2888,7 +2888,7 @@ msgstr "Agendamento da gravação guardado."
 
 #: main.py:3352
 msgid "Recording scheduled.\n\nThe programme guide has not been imported yet, so the Scheduled Recordings window may not list anything, and this may be the only episode you can schedule. Import the guide from File > Import EPG to DB to see and schedule upcoming programmes."
-msgstr "Gravação agendada.\n\nO guia de programação ainda não foi importada, por isso a janela de gravações agendadas pode não listar nada, e este pode ser o único episódio que consegue agendar. Importe o guia em Arquivo > Importar EPG para a base de dados para ver e agendar programas futuros."
+msgstr "Gravação agendada.\n\nO guia de programação ainda não foi importado, por isso a janela de gravações agendadas pode não listar nada, e este pode ser o único episódio disponível para agendamento. Importe o guia em Arquivo > Importar EPG para a base de dados para ver e agendar programas futuros."
 
 #: accessible_tools_ui.py:542
 msgid "Recording space is critically low ({free} MiB). The {count} recording(s) on this drive are being stopped safely.\n{path}"
@@ -3682,11 +3682,11 @@ msgstr "A importação do EPG não foi concluída. O guia de programação pode 
 
 #: main.py:6839
 msgid "The EPG import has finished. The programme guide is up to date."
-msgstr "A importação do EPG foi concluída. O guia de programação está atualizada."
+msgstr "A importação do EPG foi concluída. O guia de programação está atualizado."
 
 #: personal_tools_ui.py:623
 msgid "The app will close. Open it again to finish restoring the backup."
-msgstr "A aplicativo será fechada. Abra-a novamente para concluir o restauro."
+msgstr "O aplicativo será fechado. Abra-o novamente para concluir a restauração."
 
 #: main.py:7726
 msgid "The application voice is only available on Windows with SAPI."
@@ -3751,19 +3751,19 @@ msgstr "A biblioteca pode conter até 20 pastas."
 
 #: main.py:3544
 msgid "The live buffer is switching sources. The scheduled recording could not start."
-msgstr "A buffer do direto está a mudar de origem. Não foi possível iniciar a gravação agendada."
+msgstr "O buffer da transmissão ao vivo está mudando de origem. Não foi possível iniciar a gravação agendada."
 
 #: C:/forgejo-runner/work/0d9a583ddfbd6034/hostexecutor/client_timeshift.py:60
 msgid "The local buffer is still feeding a recording. Stop the recording before disabling it."
-msgstr "A buffer local ainda alimenta uma gravação. Pare-a antes de desativar esta função."
+msgstr "O buffer local ainda está sendo usado por uma gravação. Pare a gravação antes de desativar esta função."
 
 #: C:/forgejo-runner/work/0d9a583ddfbd6034/hostexecutor/client_timeshift.py:312
 msgid "The local buffer stopped because its storage or input failed."
-msgstr "A buffer local parou devido a uma falha de armazenamento ou da origem."
+msgstr "O buffer local parou devido a uma falha de armazenamento ou da origem."
 
 #: C:/forgejo-runner/work/0d9a583ddfbd6034/hostexecutor/client_timeshift.py:231
 msgid "The local live buffer could not start. No extra provider connection was opened. Disable the buffer to retry direct playback."
-msgstr "Não foi possível iniciar a buffer local. Não foi aberta uma conexão adicional ao provedor. Desative esta função para tentar novamente a reprodução direta."
+msgstr "Não foi possível iniciar o buffer local. Nenhuma conexão adicional foi aberta com o provedor. Desative esta função para tentar novamente a reprodução ao vivo."
 
 #: favorite_collections.py:52
 msgid "The maximum number of favourite lists is 50."
@@ -4456,7 +4456,7 @@ msgstr "Recodificação x264 (MP4)"
 
 #: main.py:9586
 msgid "{app} is already running, but it did not respond. Wait a moment and try again, or close it from the notification area."
-msgstr "O {app} já está em execução, mas não respondeu. Asalve um momento e tente novamente, ou feche-o pela área de notificação."
+msgstr "O {app} já está em execução, mas não respondeu. Aguarde um momento e tente novamente, ou feche-o pela área de notificação."
 
 #: main.py:4806
 msgid "{app} is up to date (v{version})."
@@ -4477,7 +4477,7 @@ msgstr "{count} programas"
 
 #: main.py:5720
 msgid "{count} recording is scheduled but has not started yet.\n\n{names}\n\nThe app must stay open to start it. Exit anyway?"
-msgstr "{count} gravação está agendada mas ainda não começou.\n\n{names}\n\nA aplicativo tem de permanecer aberta para a iniciar. Sair na mesma?"
+msgstr "{count} gravação está agendada, mas ainda não começou.\n\n{names}\n\nO aplicativo precisa permanecer aberto para iniciá-la. Deseja sair mesmo assim?"
 
 #: accessible_tools_ui.py:327
 msgid "{count} recording(s). Active recordings are not listed."
