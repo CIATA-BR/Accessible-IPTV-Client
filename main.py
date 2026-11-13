@@ -52,7 +52,7 @@ from options import (
     get_recordings_dir, get_dvr_schedule_path, get_logs_dir, get_epg_log_path,
     normalize_recording_format, announce_event_enabled, coerce_channel_audio_tracks,
     coerce_channel_audio_track_indices, MAX_AUDIO_TRACKS,
-    is_windows_installed_build, get_user_config_dir
+    is_windows_installed_build, get_user_config_dir, atomic_write_text
 )
 # Same normalization the EPG database indexes with - importing it from anywhere
 # else is how the UI and the database drift apart.
@@ -2500,8 +2500,7 @@ class IPTVClient(AccessibleToolsMixin, PersonalToolsMixin, PlanningMixin, LiveBu
                                 text = raw.decode("utf-8-sig")
                             except UnicodeDecodeError:
                                 text = raw.decode("latin-1", "ignore")
-                        with open(cache_path, "w", encoding="utf-8") as f:
-                            f.write(text)
+                        atomic_write_text(cache_path, text)
                     else:
                         with open(cache_path, "r", encoding="utf-8", errors="ignore") as f:
                             text = f.read()
