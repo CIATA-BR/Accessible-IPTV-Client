@@ -61,6 +61,7 @@ from channel_names import (canonicalize_name, strip_noise_words, id_number_text,
 import app_meta
 import release_notes
 import single_instance
+import startup
 import updater
 from playlist import (
     EPGDatabase, EPGManagerDialog, PlaylistManagerDialog,
@@ -1016,6 +1017,8 @@ class IPTVClient(AccessibleToolsMixin, PersonalToolsMixin, PlanningMixin, LiveBu
         self._epg_import_notify = False
         self.refresh_timer = None
         self.minimize_to_tray = bool(self.config.get("minimize_to_tray", False))
+        self.start_with_system = bool(self.config.get("start_with_system", False))
+        self.start_minimized = bool(self.config.get("start_minimized", False))
         self.tray_icon = None
         self._tray_allow_restore = False
         self._tray_ready_timer: Optional[wx.CallLater] = None
@@ -1182,7 +1185,10 @@ class IPTVClient(AccessibleToolsMixin, PersonalToolsMixin, PlanningMixin, LiveBu
         # The playlist is still loading: a search that rebuilds the categories
         # must not replace that with "No channels found.".
         self._playlist_loading = True
-        self.Show()
+        if self.start_minimized:
+            self.show_tray_icon()
+        else:
+            self.Show()
 
         # Defer non-UI startup work until the frame has had a chance to paint.
         wx.CallLater(50, self._run_deferred_startup_tasks)
@@ -1192,6 +1198,12 @@ class IPTVClient(AccessibleToolsMixin, PersonalToolsMixin, PlanningMixin, LiveBu
 
     def _run_deferred_startup_tasks(self):
         self._report_finished_update()
+        if self.start_with_system and startup.supported():
+            threading.Thread(
+                target=self._sync_startup_registration,
+                daemon=True,
+                name="StartupRegistration",
+            ).start()
         # A successful update leaves its ~95 MB staging dir in %TEMP% (the
         # helper runs from inside it); clear old ones off the UI thread.
         threading.Thread(
@@ -1209,6 +1221,13 @@ class IPTVClient(AccessibleToolsMixin, PersonalToolsMixin, PlanningMixin, LiveBu
         start_searches = getattr(self, '_start_saved_searches', None)
         if callable(start_searches):
             start_searches()
+
+    def _sync_startup_registration(self):
+        """Repair a stale per-user startup command after an app move/update."""
+        try:
+            startup.set_enabled(True)
+        except OSError:
+            LOG.warning("Could not refresh automatic startup registration.", exc_info=True)
 
     def _ensure_db_tuned_background(self):
         with self._db_tune_lock:
@@ -4695,6 +4714,33 @@ class IPTVClient(AccessibleToolsMixin, PersonalToolsMixin, PlanningMixin, LiveBu
         else:
             self.minimize_to_tray = self.min_to_tray_item.IsChecked()
         self.config["minimize_to_tray"] = self.minimize_to_tray
+        save_config(self.config)
+
+    def on_toggle_start_with_system(self, event):
+        if platform.system() == "Linux":
+            enabled = not self.start_with_system
+        else:
+            enabled = event.IsChecked()
+        try:
+            startup.set_enabled(enabled)
+        except OSError as error:
+            item = getattr(self, "start_with_system_item", None)
+            if item is not None:
+                item.Check(self.start_with_system)
+            message_box(
+                _("Could not change automatic startup: {error}").format(error=error),
+                _("Startup"), wx.OK | wx.ICON_ERROR)
+            return
+        self.start_with_system = bool(enabled)
+        self.config["start_with_system"] = self.start_with_system
+        save_config(self.config)
+
+    def on_toggle_start_minimized(self, event):
+        if platform.system() == "Linux":
+            self.start_minimized = not self.start_minimized
+        else:
+            self.start_minimized = event.IsChecked()
+        self.config["start_minimized"] = self.start_minimized
         save_config(self.config)
 
     def _apply_channel_url_visibility(self) -> None:
