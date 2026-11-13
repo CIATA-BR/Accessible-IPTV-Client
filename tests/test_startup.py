@@ -1,4 +1,5 @@
 import os
+import plistlib
 
 import startup
 
@@ -71,6 +72,27 @@ def test_linux_autostart_escapes_percent_field_codes(tmp_path):
     assert 'Exec="/opt/Accessible%%20IPTV/iptv"' in text
 
 
+def test_macos_autostart_writes_and_removes_launch_agent(tmp_path):
+    argv = ["/Applications/AccessibleIPTVClient.app/Contents/MacOS/IPTVClient"]
+    startup.set_enabled(True, platform_name="darwin", argv=argv, home_dir=str(tmp_path))
+
+    path = tmp_path / "Library" / "LaunchAgents" / startup.MACOS_PLIST_FILE
+    with open(path, "rb") as handle:
+        payload = plistlib.load(handle)
+    assert payload["Label"] == startup.MACOS_PLIST_LABEL
+    assert payload["ProgramArguments"] == argv
+    assert payload["RunAtLoad"] is True
+    assert payload["KeepAlive"] is False
+    assert payload["ProcessType"] == "Interactive"
+
+    startup.set_enabled(False, platform_name="darwin", argv=argv, home_dir=str(tmp_path))
+    assert not path.exists()
+
+
+def test_macos_is_supported():
+    assert startup.supported("darwin") is True
+
+
 def test_windows_autostart_uses_current_user_run_key():
     registry = _FakeWinreg()
     argv = [r"C:\Program Files\Accessible IPTV Client\iptv.exe"]
@@ -89,7 +111,7 @@ def test_windows_autostart_uses_current_user_run_key():
 
 def test_unsupported_platform_is_rejected():
     try:
-        startup.set_enabled(True, platform_name="darwin", argv=["app"])
+        startup.set_enabled(True, platform_name="freebsd", argv=["app"])
     except OSError as error:
         assert "not supported" in str(error)
     else:
