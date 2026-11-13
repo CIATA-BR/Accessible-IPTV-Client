@@ -4552,3 +4552,15 @@ msgstr "~{value} Mbps"
 msgid "◄ Back"
 msgstr "◄ 戻る"
 
+
+msgid "Start with System"
+msgstr "システムと同時に起動"
+
+msgid "Start Minimized"
+msgstr "最小化して起動"
+
+msgid "Could not change automatic startup: {error}"
+msgstr "自動起動を変更できませんでした: {error}"
+
+msgid "Startup"
+msgstr "起動"
