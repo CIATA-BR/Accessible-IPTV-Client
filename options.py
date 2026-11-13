@@ -199,7 +199,9 @@ def _copy_legacy_macos_runtime_data() -> None:
     temp_dir = tempfile.gettempdir()
     data_dir = _mac_data_dir()
     cache_dir = _mac_cache_dir()
-    logs_dir = _mac_logs_dir()
+    # Do not pre-create the log destination: _copy_tree_if_missing() only
+    # copies when the destination does not exist.
+    logs_dir = _mac_logs_dir(create=False)
 
     for suffix in ("", "-wal", "-shm", "-journal"):
         name = EPG_DB_FILE + suffix
@@ -213,6 +215,8 @@ def _copy_legacy_macos_runtime_data() -> None:
     legacy_logs = os.path.join(temp_dir, LOG_DIR_NAME)
     if os.path.isdir(legacy_logs):
         _copy_tree_if_missing(legacy_logs, logs_dir)
+    else:
+        os.makedirs(logs_dir, exist_ok=True)
     _copy_file_if_missing(
         os.path.join(temp_dir, EPG_DEBUG_LOG_FILE),
         os.path.join(logs_dir, EPG_DEBUG_LOG_FILE),
