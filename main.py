@@ -52,7 +52,7 @@ from options import (
     get_recordings_dir, get_dvr_schedule_path, get_logs_dir, get_epg_log_path,
     normalize_recording_format, announce_event_enabled, coerce_channel_audio_tracks,
     coerce_channel_audio_track_indices, MAX_AUDIO_TRACKS,
-    is_windows_installed_build, get_user_config_dir, atomic_write_text
+    is_windows_installed_build, get_user_config_dir, atomic_write_text, cache_file_is_fresh
 )
 # Same normalization the EPG database indexes with - importing it from anywhere
 # else is how the UI and the database drift apart.
@@ -2483,11 +2483,7 @@ class IPTVClient(AccessibleToolsMixin, PersonalToolsMixin, PlanningMixin, LiveBu
                     parsed_cache = self._parsed_cache_path_for_key(src)
                     result["valid_cache"] = cache_path
                     
-                    download = True
-                    if os.path.exists(cache_path):
-                        age = (datetime.datetime.now() - datetime.datetime.fromtimestamp(os.path.getmtime(cache_path))).total_seconds()
-                        if age < 15 * 60:
-                            download = False
+                    download = not cache_file_is_fresh(cache_path, max_age=15 * 60)
 
                     text = ""
                     if download:
