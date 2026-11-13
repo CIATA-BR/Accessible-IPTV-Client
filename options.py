@@ -794,6 +794,23 @@ def get_cache_path_for_url(url):
     h = hashlib.sha1(url.encode("utf-8")).hexdigest()
     return os.path.join(get_cache_dir(), f"{h}.m3u")
 
+
+def atomic_write_text(path: str, text: str, *, encoding: str = "utf-8") -> None:
+    """Replace a text file only after the complete new contents are durable."""
+    directory = os.path.dirname(os.path.abspath(path))
+    os.makedirs(directory, exist_ok=True)
+    fd, temporary = tempfile.mkstemp(dir=directory, prefix=".iptv-write-", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding=encoding) as handle:
+            handle.write(text)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+    finally:
+        if os.path.exists(temporary):
+            os.remove(temporary)
+
+
 def normalize_recording_format(value) -> str:
     """Clamp a recording-format key to a known preset, defaulting to MKV copy."""
     try:

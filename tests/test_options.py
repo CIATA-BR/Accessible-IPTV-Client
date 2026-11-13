@@ -376,3 +376,34 @@ def test_linux_runtime_paths_fall_back_to_temp_when_xdg_unavailable(monkeypatch,
     assert Path(options.get_db_path()) == legacy / "epg.db"
     assert Path(options.get_cache_dir()) == legacy / "iptv_cache"
     assert Path(options.get_logs_dir()) == legacy / "logs"
+
+
+def test_atomic_text_write_preserves_previous_cache_on_replace_failure(tmp_path, monkeypatch):
+    target = tmp_path / "playlist.m3u"
+    target.write_text("old cache", encoding="utf-8")
+
+    monkeypatch.setattr(
+        options.os,
+        "replace",
+        lambda *_args: (_ for _ in ()).throw(OSError("disk error")),
+    )
+
+    try:
+        options.atomic_write_text(str(target), "new cache")
+    except OSError as error:
+        assert "disk error" in str(error)
+    else:
+        raise AssertionError("replace failure must propagate")
+
+    assert target.read_text(encoding="utf-8") == "old cache"
+    assert not list(tmp_path.glob(".iptv-write-*.tmp"))
+
+
+def test_atomic_text_write_replaces_complete_cache(tmp_path):
+    target = tmp_path / "playlist.m3u"
+    target.write_text("old cache", encoding="utf-8")
+
+    options.atomic_write_text(str(target), "#EXTM3U\nnew")
+
+    assert target.read_text(encoding="utf-8") == "#EXTM3U\nnew"
+    assert not list(tmp_path.glob(".iptv-write-*.tmp"))
