@@ -198,6 +198,14 @@ class UiMixin:
                 min_item = menu.AppendCheckItem(min_to_tray_id, _("Minimize to System Tray"))
                 min_item.Check(self.minimize_to_tray)
                 self.Bind(wx.EVT_MENU, self.on_toggle_min_to_tray, id=min_to_tray_id)
+                start_with_system_id = 1105
+                start_with_item = menu.AppendCheckItem(start_with_system_id, _("Start with System"))
+                start_with_item.Check(self.start_with_system)
+                self.Bind(wx.EVT_MENU, self.on_toggle_start_with_system, id=start_with_system_id)
+                start_minimized_id = 1106
+                start_min_item = menu.AppendCheckItem(start_minimized_id, _("Start Minimized"))
+                start_min_item.Check(self.start_minimized)
+                self.Bind(wx.EVT_MENU, self.on_toggle_start_minimized, id=start_minimized_id)
                 menu.AppendSeparator()
                 show_enter_id = 1102
                 show_enter_item = menu.AppendCheckItem(show_enter_id, _("Show Player on Enter"))
@@ -347,6 +355,10 @@ class UiMixin:
                 self.Bind(wx.EVT_MENU, lambda evt, c=code: self._on_select_language(c), li)
             om.AppendSubMenu(lang_menu, _("Language"))
             self.min_to_tray_item = om.AppendCheckItem(wx.ID_ANY, _("Minimize to System Tray"))
+            self.start_with_system_item = None
+            if platform.system() == "Windows":
+                self.start_with_system_item = om.AppendCheckItem(wx.ID_ANY, _("Start with System"))
+            self.start_minimized_item = om.AppendCheckItem(wx.ID_ANY, _("Start Minimized"))
             self.show_player_on_enter_item = om.AppendCheckItem(wx.ID_ANY, _("Show Player on Enter"))
             self.show_channel_url_item = om.AppendCheckItem(wx.ID_ANY, _("Show Stream URL"))
             self.auto_check_updates_item = om.AppendCheckItem(wx.ID_ANY, _("Auto-check for Updates"))
@@ -501,6 +513,9 @@ class UiMixin:
                 self.Bind(wx.EVT_MENU, lambda evt, attr=key: self._select_player(attr), item)
             self.Bind(wx.EVT_MENU, self._select_custom_player, self.player_Custom)
             self.Bind(wx.EVT_MENU, self.on_toggle_min_to_tray, self.min_to_tray_item)
+            if self.start_with_system_item is not None:
+                self.Bind(wx.EVT_MENU, self.on_toggle_start_with_system, self.start_with_system_item)
+            self.Bind(wx.EVT_MENU, self.on_toggle_start_minimized, self.start_minimized_item)
             self.Bind(wx.EVT_MENU, self.on_toggle_show_player_on_enter, self.show_player_on_enter_item)
             self.Bind(wx.EVT_MENU, self.on_toggle_show_channel_url, self.show_channel_url_item)
             self.Bind(wx.EVT_MENU, self.on_toggle_auto_check_updates, self.auto_check_updates_item)
@@ -513,6 +528,9 @@ class UiMixin:
             self.Bind(wx.EVT_MENU_OPEN, self.on_menu_open)
             self._sync_player_menu_from_config()
             self.min_to_tray_item.Check(self.minimize_to_tray)
+            if self.start_with_system_item is not None:
+                self.start_with_system_item.Check(self.start_with_system)
+            self.start_minimized_item.Check(self.start_minimized)
             self.show_player_on_enter_item.Check(self.show_player_on_enter)
             self.show_channel_url_item.Check(self.show_channel_url)
             self.auto_check_updates_item.Check(self.auto_check_updates)
