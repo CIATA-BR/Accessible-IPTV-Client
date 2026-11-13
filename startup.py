@@ -63,16 +63,13 @@ def _set_windows(enabled: bool, argv: list[str], *, winreg_module=None) -> None:
             try:
                 winreg_module.DeleteValue(key, APP_RUN_VALUE)
             except FileNotFoundError:
-                pass
+                return
 
 
 def _set_linux(enabled: bool, argv: list[str], *, config_home: Optional[str] = None) -> None:
     path = linux_autostart_path(config_home=config_home)
     if not enabled:
-        try:
-            path.unlink()
-        except FileNotFoundError:
-            pass
+        path.unlink(missing_ok=True)
         return
 
     path.parent.mkdir(parents=True, exist_ok=True)
