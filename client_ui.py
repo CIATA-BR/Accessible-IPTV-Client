@@ -356,7 +356,7 @@ class UiMixin:
             om.AppendSubMenu(lang_menu, _("Language"))
             self.min_to_tray_item = om.AppendCheckItem(wx.ID_ANY, _("Minimize to System Tray"))
             self.start_with_system_item = None
-            if platform.system() == "Windows":
+            if platform.system() in {"Windows", "Linux"}:
                 self.start_with_system_item = om.AppendCheckItem(wx.ID_ANY, _("Start with System"))
             self.start_minimized_item = om.AppendCheckItem(wx.ID_ANY, _("Start Minimized"))
             self.show_player_on_enter_item = om.AppendCheckItem(wx.ID_ANY, _("Show Player on Enter"))
@@ -494,6 +494,9 @@ class UiMixin:
             user_guide.set_menu_help(self, self.audio_preference_item, "preferred-audio-track")
             user_guide.set_menu_help(self, lang_menu, "language")
             user_guide.set_menu_help(self, self.min_to_tray_item, "system-tray")
+            if self.start_with_system_item is not None:
+                user_guide.set_menu_help(self, self.start_with_system_item, "system-tray")
+            user_guide.set_menu_help(self, self.start_minimized_item, "system-tray")
             user_guide.set_menu_help(self, self.auto_check_updates_item, "updates")
             user_guide.set_menu_help(self, self.user_guide_item, "using-help")
             user_guide.set_menu_help(self, self.check_updates_item, "updates")
