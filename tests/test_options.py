@@ -407,3 +407,26 @@ def test_atomic_text_write_replaces_complete_cache(tmp_path):
 
     assert target.read_text(encoding="utf-8") == "#EXTM3U\nnew"
     assert not list(tmp_path.glob(".iptv-write-*.tmp"))
+
+
+def test_playlist_cache_with_future_mtime_is_not_fresh(tmp_path):
+    path = tmp_path / "playlist.m3u"
+    path.write_text("#EXTM3U", encoding="utf-8")
+
+    assert options.cache_file_is_fresh(str(path), max_age=900, now=1000) is False
+
+
+def test_playlist_cache_with_recent_past_mtime_is_fresh(tmp_path, monkeypatch):
+    path = tmp_path / "playlist.m3u"
+    path.write_text("#EXTM3U", encoding="utf-8")
+    monkeypatch.setattr(options.os.path, "getmtime", lambda _path: 950)
+
+    assert options.cache_file_is_fresh(str(path), max_age=900, now=1000) is True
+
+
+def test_playlist_cache_older_than_limit_is_not_fresh(tmp_path, monkeypatch):
+    path = tmp_path / "playlist.m3u"
+    path.write_text("#EXTM3U", encoding="utf-8")
+    monkeypatch.setattr(options.os.path, "getmtime", lambda _path: 100)
+
+    assert options.cache_file_is_fresh(str(path), max_age=900, now=1000) is False
