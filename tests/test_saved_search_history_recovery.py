@@ -1,4 +1,4 @@
-from pathlib import Path
+import time
 
 import saved_searches
 
@@ -18,7 +18,8 @@ def test_corrupt_saved_search_history_is_preserved_and_reset(tmp_path):
 
 def test_valid_saved_search_history_still_loads(tmp_path):
     history = tmp_path / "programme-search-state.json"
-    history.write_text('{"' + "a" * 64 + '": 2000000000}', encoding="utf-8")
+    expires = time.time() + 3600
+    history.write_text('{"' + "a" * 64 + '": ' + str(expires) + '}', encoding="utf-8")
 
     loaded = saved_searches.read_seen(str(history))
 
