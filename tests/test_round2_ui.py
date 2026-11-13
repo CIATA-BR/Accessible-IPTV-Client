@@ -75,6 +75,47 @@ def test_stale_natural_end_callback_cannot_use_the_new_episode():
     episode_continuation_ui.finished(SimpleNamespace(_destroyed=True), 11)
 
 
+def test_next_episode_waits_for_existing_modal(monkeypatch):
+    state = {"open": True}
+    owner = SimpleNamespace(_modal_box_is_open=lambda: state["open"])
+    scheduled = []
+    called = []
+    monkeypatch.setattr(
+        episode_continuation_ui.wx,
+        "CallLater",
+        lambda delay, callback, *args: scheduled.append((delay, callback, args)),
+    )
+
+    episode_continuation_ui._when_modal_clear(
+        owner, lambda: True, lambda value: called.append(value), "episode"
+    )
+
+    assert called == []
+    assert len(scheduled) == 1
+    assert scheduled[0][0] == 250
+
+    state["open"] = False
+    _, callback, args = scheduled.pop()
+    callback(*args)
+    assert called == ["episode"]
+
+
+def test_next_episode_modal_deferral_drops_stale_request(monkeypatch):
+    owner = SimpleNamespace(_modal_box_is_open=lambda: True)
+    scheduled = []
+    monkeypatch.setattr(
+        episode_continuation_ui.wx,
+        "CallLater",
+        lambda delay, callback, *args: scheduled.append((delay, callback, args)),
+    )
+
+    episode_continuation_ui._when_modal_clear(
+        owner, lambda: False, lambda: pytest.fail("stale continuation ran")
+    )
+
+    assert scheduled == []
+
+
 def test_next_episode_countdown_cancels_after_a_new_playback_request(owner):
     dialog = episode_continuation_ui.NextEpisodeDialog(owner, 'Episode', lambda: False)
     try:
