@@ -78,6 +78,21 @@ def test_corrupt_file_is_preserved(tmp_path):
     assert path.read_text()=='{bad'
 
 
+def test_partially_damaged_reminder_file_preserves_original_and_loads_valid_rows(tmp_path):
+    path = tmp_path / 'r.json'
+    valid = reminders.build(CHANNEL, program(), now=NOW)
+    original = {"version": 1, "reminders": [valid, {}, dict(valid, lead=True)]}
+    path.write_text(json.dumps(original), encoding='utf-8')
+
+    store = reminders.ReminderStore(str(path))
+
+    assert store.list() == [valid]
+    backups = list(tmp_path.glob('r.json.corrupt-*'))
+    assert len(backups) == 1
+    assert json.loads(backups[0].read_text(encoding='utf-8')) == original
+    assert json.loads(path.read_text(encoding='utf-8')) == original
+
+
 def test_malformed_rows_and_bounded_history_do_not_displace_active_reminders(tmp_path):
     store=reminders.ReminderStore(str(tmp_path/'r.json'))
     rows=[]

@@ -2,16 +2,20 @@
 import copy
 import hashlib
 import json
+import logging
 import math
 import os
 import re
 import tempfile
 import threading
 import time
+import uuid
 
 import dvr
 import favorites
 from http_headers import channel_http_headers
+
+LOG = logging.getLogger(__name__)
 
 MAX_REMINDERS = 500
 STATES = {'scheduled', 'ready', 'notified', 'expired'}
@@ -85,6 +89,26 @@ def resolve_channel(row, channels):
     return next(iter(matches.values())) if len(matches) == 1 else None
 
 
+def _preserve_damaged_file(path):
+    backup = path + ".corrupt-" + uuid.uuid4().hex
+    try:
+        with open(path, "rb") as source, open(backup, "xb") as target:
+            while True:
+                chunk = source.read(1024 * 1024)
+                if not chunk:
+                    break
+                target.write(chunk)
+            target.flush()
+            os.fsync(target.fileno())
+    except OSError:
+        try:
+            os.remove(backup)
+        except OSError:
+            LOG.debug("Could not remove incomplete reminder backup", exc_info=True)
+        raise
+    return backup
+
+
 class ReminderStore:
     def __init__(self, path):
         self.path = path
@@ -98,7 +122,14 @@ class ReminderStore:
                 data = json.load(handle)
             if not isinstance(data, dict) or data.get('version') != 1 or not isinstance(data.get('reminders'), list):
                 raise ValueError('Invalid reminder file')
-            self.rows = normalize(data['reminders'])
+            raw_rows = data['reminders']
+            normalized = normalize(raw_rows)
+            if len(normalized) != len(raw_rows):
+                # Keep the exact original before accepting the valid subset.
+                # Otherwise one malformed row silently disappears with no
+                # evidence for recovery or diagnosis.
+                _preserve_damaged_file(path)
+            self.rows = normalized
 
     def list(self):
         with self._lock:
