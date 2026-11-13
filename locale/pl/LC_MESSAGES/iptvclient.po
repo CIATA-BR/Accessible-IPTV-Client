@@ -4552,3 +4552,15 @@ msgstr "~{value} Mb/s"
 msgid "◄ Back"
 msgstr "◄ Wstecz"
 
+
+msgid "Start with System"
+msgstr "Uruchamiaj z systemem"
+
+msgid "Start Minimized"
+msgstr "Uruchamiaj zminimalizowany"
+
+msgid "Could not change automatic startup: {error}"
+msgstr "Nie można zmienić automatycznego uruchamiania: {error}"
+
+msgid "Startup"
+msgstr "Uruchamianie"
