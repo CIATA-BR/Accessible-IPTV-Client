@@ -100,7 +100,11 @@ def program_episode_key(program: Dict[str, str]) -> Optional[str]:
         # xmltv_ns is zero-based and written with a trailing dot
         # ("0.4." = season 1, episode 5); the S01E05 and 1x5 spellings
         # are already one-based. All three land on the same key.
-        m = re.fullmatch(r"(\d+)\.(\d+)\.(?:\d+(?:/\d+)?)?", episode)
+        m = re.fullmatch(
+            r"\s*(\d+)(?:/\d+)?\s*\.\s*(\d+)(?:/\d+)?"
+            r"(?:\s*\.\s*(?:\d+(?:/\d+)?)?\s*)?",
+            episode,
+        )
         if m:
             return "ep:{0}x{1}".format(int(m.group(1)) + 1, int(m.group(2)) + 1)
         m = re.fullmatch(r"s(\d+)\s*e(\d+)", episode, re.IGNORECASE) or \
