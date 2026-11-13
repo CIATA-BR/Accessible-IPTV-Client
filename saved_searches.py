@@ -8,7 +8,6 @@ from pathlib import Path
 import re
 import sqlite3
 import tempfile
-import uuid
 import time
 import uuid
 
