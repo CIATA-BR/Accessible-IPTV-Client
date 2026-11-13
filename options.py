@@ -709,8 +709,10 @@ def get_loaded_config_path() -> str:
     return _CONFIG_PATH or ""
 
 def get_cache_dir():
-    if _is_windows_platform() or sys.platform == "darwin":
+    if _is_windows_platform():
         cache_dir = os.path.join(get_user_config_dir(), CACHE_DIR_NAME)
+    elif sys.platform == "darwin":
+        cache_dir = os.path.join(tempfile.gettempdir(), CACHE_DIR_NAME)
     else:
         try:
             _copy_legacy_linux_runtime_data()
@@ -984,7 +986,7 @@ def get_logs_dir() -> str:
     if _is_windows_platform():
         base = get_user_config_dir()
     elif sys.platform == "darwin":
-        base = get_user_config_dir()
+        base = tempfile.gettempdir()
     else:
         try:
             _copy_legacy_linux_runtime_data()
@@ -1001,8 +1003,10 @@ def get_logs_dir() -> str:
 
 
 def get_db_path():
-    if _is_windows_platform() or sys.platform == "darwin":
+    if _is_windows_platform():
         return os.path.join(get_user_config_dir(), EPG_DB_FILE)
+    if sys.platform == "darwin":
+        return os.path.join(tempfile.gettempdir(), EPG_DB_FILE)
     try:
         _copy_legacy_linux_runtime_data()
         return os.path.join(_linux_data_dir(), EPG_DB_FILE)
