@@ -1018,6 +1018,7 @@ class IPTVClient(AccessibleToolsMixin, PersonalToolsMixin, PlanningMixin, LiveBu
         self.refresh_timer = None
         self.minimize_to_tray = bool(self.config.get("minimize_to_tray", False))
         self.start_with_system = bool(self.config.get("start_with_system", False))
+        self._startup_registration_lock = threading.Lock()
         self.start_minimized = bool(self.config.get("start_minimized", False))
         self.tray_icon = None
         self._tray_allow_restore = False
@@ -1223,9 +1224,12 @@ class IPTVClient(AccessibleToolsMixin, PersonalToolsMixin, PlanningMixin, LiveBu
             start_searches()
 
     def _sync_startup_registration(self):
-        """Repair a stale per-user startup command after an app move/update."""
+        """Repair a stale startup command without racing a user preference change."""
         try:
-            startup.set_enabled(True)
+            with self._startup_registration_lock:
+                if not self.start_with_system:
+                    return
+                startup.set_enabled(True)
         except OSError:
             LOG.warning("Could not refresh automatic startup registration.", exc_info=True)
 
@@ -4722,7 +4726,27 @@ class IPTVClient(AccessibleToolsMixin, PersonalToolsMixin, PlanningMixin, LiveBu
         else:
             enabled = event.IsChecked()
         try:
-            startup.set_enabled(enabled)
+            with self._startup_registration_lock:
+                startup.set_enabled(enabled)
+                self.config["start_with_system"] = bool(enabled)
+                if not save_config(self.config):
+                    self.config["start_with_system"] = previous
+                    try:
+                        startup.set_enabled(previous)
+                    except OSError:
+                        LOG.exception("Could not roll back automatic startup after config save failure.")
+                    raise RuntimeError("startup-config-save-failed")
+                self.start_with_system = bool(enabled)
+        except RuntimeError as error:
+            if str(error) != "startup-config-save-failed":
+                raise
+            item = getattr(self, "start_with_system_item", None)
+            if item is not None:
+                item.Check(previous)
+            message_box(
+                _("The settings could not be saved. Check the free space and write permissions, then try again."),
+                _("Startup"), wx.OK | wx.ICON_ERROR)
+            return
         except OSError as error:
             item = getattr(self, "start_with_system_item", None)
             if item is not None:
@@ -4731,22 +4755,6 @@ class IPTVClient(AccessibleToolsMixin, PersonalToolsMixin, PlanningMixin, LiveBu
                 _("Could not change automatic startup: {error}").format(error=error),
                 _("Startup"), wx.OK | wx.ICON_ERROR)
             return
-
-        self.config["start_with_system"] = bool(enabled)
-        if not save_config(self.config):
-            self.config["start_with_system"] = previous
-            try:
-                startup.set_enabled(previous)
-            except OSError:
-                LOG.exception("Could not roll back automatic startup after config save failure.")
-            item = getattr(self, "start_with_system_item", None)
-            if item is not None:
-                item.Check(previous)
-            message_box(
-                _("The settings could not be saved. Check the free space and write permissions, then try again."),
-                _("Startup"), wx.OK | wx.ICON_ERROR)
-            return
-        self.start_with_system = bool(enabled)
 
     def on_toggle_start_minimized(self, event):
         if platform.system() == "Linux":
