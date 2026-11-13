@@ -13,6 +13,18 @@ from i18n import gettext as _
 from modal_guard import show_modal
 
 
+
+
+def _when_modal_clear(owner, valid, callback, *args):
+    """Run callback once modal input is free, unless the request went stale."""
+    if not valid():
+        return
+    if owner._modal_box_is_open():
+        wx.CallLater(250, _when_modal_clear, owner, valid, callback, *args)
+        return
+    callback(*args)
+
+
 def prepare(owner, frame, channel):
     frame._episode_channel = copy.deepcopy(channel or {})
     frame._episode_queue = copy.deepcopy(getattr(owner, "_vod_episode_queue", ()))
@@ -89,7 +101,10 @@ def finished(player, expected_generation):
         if not item:
             return
         # Do not enter a second modal loop while another question owns input.
+        # Defer instead of dropping the continuation entirely: a recording or
+        # update question can legitimately be open at the exact natural end.
         if owner._modal_box_is_open():
+            _when_modal_clear(owner, valid, ready, item, error)
             return
         dialog = NextEpisodeDialog(player, item.get("name") or _("Next Episode"), valid)
         try:
