@@ -128,6 +128,42 @@ def recording(tmp_path):
     return path, library.scan(tmp_path)[0]
 
 
+def test_corrupt_recording_index_is_preserved_before_recovery(tmp_path):
+    media = tmp_path / 'fixture.mkv'
+    media.write_bytes(b'media fixture')
+    index = tmp_path / '.iptv-recordings.json'
+    original = b'{not valid json'
+    index.write_bytes(original)
+
+    rows = library.scan(tmp_path)
+
+    assert len(rows) == 1
+    assert rows[0]['title'] == 'fixture'
+    assert not index.exists()
+    backups = list(tmp_path.glob('.iptv-recordings.json.corrupt-*'))
+    assert len(backups) == 1
+    assert backups[0].read_bytes() == original
+
+
+def test_unpreservable_corrupt_recording_index_does_not_get_overwritten(tmp_path, monkeypatch):
+    media = tmp_path / 'fixture.mkv'
+    media.write_bytes(b'media fixture')
+    index = tmp_path / '.iptv-recordings.json'
+    original = b'{not valid json'
+    index.write_bytes(original)
+
+    monkeypatch.setattr(
+        library.os,
+        'replace',
+        lambda *_args: (_ for _ in ()).throw(PermissionError('read only')),
+    )
+
+    with pytest.raises(PermissionError, match='read only'):
+        library.scan(tmp_path)
+
+    assert index.read_bytes() == original
+
+
 def test_recording_rename_trash_restore_keeps_contents_and_resume_identity(tmp_path):
     path, row = recording(tmp_path)
     before = playback_resume.item_key(library.playback_channel(tmp_path, row))
