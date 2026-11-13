@@ -109,9 +109,9 @@ def test_an_unreadable_config_is_kept_before_it_is_overwritten(tmp_path, monkeyp
 
     options.load_config()
 
-    kept = tmp_path / "iptvclient.conf.corrupt"
-    assert kept.exists()
-    assert kept.read_text(encoding="utf-8") == "{ this is not json"
+    kept = list(tmp_path.glob("iptvclient.conf.corrupt-*"))
+    assert len(kept) == 1
+    assert kept[0].read_text(encoding="utf-8") == "{ this is not json"
 
 
 def test_a_first_run_opens_with_the_player_that_ships(tmp_path, monkeypatch):
@@ -133,8 +133,8 @@ def test_valid_json_of_the_wrong_shape_is_kept_before_it_is_overwritten(tmp_path
     cfg = options.load_config()
 
     assert cfg["media_player"] == "Built-in Player"
-    kept = tmp_path / "iptvclient.conf.corrupt"
-    assert kept.exists() and kept.read_text(encoding="utf-8") == "[]"
+    kept = list(tmp_path.glob("iptvclient.conf.corrupt-*"))
+    assert len(kept) == 1 and kept[0].read_text(encoding="utf-8") == "[]"
 
 
 def test_a_relative_recording_folder_does_not_land_in_the_install_directory(tmp_path, monkeypatch):
@@ -407,3 +407,21 @@ def test_atomic_text_write_replaces_complete_cache(tmp_path):
 
     assert target.read_text(encoding="utf-8") == "#EXTM3U\nnew"
     assert not list(tmp_path.glob(".iptv-write-*.tmp"))
+
+
+def test_repeated_corrupt_configs_keep_distinct_backups(tmp_path, monkeypatch):
+    cfg_file = tmp_path / "iptvclient.conf"
+    monkeypatch.setattr(options, "get_config_read_candidates", lambda: [str(cfg_file)])
+    monkeypatch.setattr(options, "get_config_write_target", lambda: str(tmp_path / "written.conf"))
+
+    cfg_file.write_text("{ first bad config", encoding="utf-8")
+    options.load_config()
+    cfg_file.write_text("{ second bad config", encoding="utf-8")
+    options.load_config()
+
+    kept = sorted(tmp_path.glob("iptvclient.conf.corrupt-*"))
+    assert len(kept) == 2
+    assert {p.read_text(encoding="utf-8") for p in kept} == {
+        "{ first bad config",
+        "{ second bad config",
+    }
