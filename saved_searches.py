@@ -3,6 +3,7 @@ import copy
 import datetime as dt
 import hashlib
 import json
+import logging
 import os
 from pathlib import Path
 import re
@@ -14,6 +15,8 @@ import uuid
 import channel_identity
 import programme_reminders
 from i18n import gettext as _
+
+LOG = logging.getLogger(__name__)
 
 MAX_RULES = 30
 MAX_RESULTS = 500
@@ -168,7 +171,7 @@ def _preserve_corrupt_seen(path):
         try:
             os.remove(backup)
         except OSError:
-            pass
+            LOG.debug("Could not remove incomplete saved-search history backup", exc_info=True)
         raise
     return backup
 
