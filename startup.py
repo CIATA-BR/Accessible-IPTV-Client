@@ -1,8 +1,9 @@
-"""Per-user startup integration for Windows and freedesktop Linux."""
+"""Per-user startup integration for Windows, Linux, and macOS."""
 
 from __future__ import annotations
 
 import os
+import plistlib
 import subprocess
 import sys
 from pathlib import Path
@@ -10,11 +11,13 @@ from typing import Iterable, Optional
 
 APP_RUN_VALUE = "Accessible IPTV Client"
 LINUX_DESKTOP_FILE = "accessible-iptv-client.desktop"
+MACOS_PLIST_LABEL = "com.serrebidev.accessibleiptvclient"
+MACOS_PLIST_FILE = MACOS_PLIST_LABEL + ".plist"
 
 
 def supported(platform_name: Optional[str] = None) -> bool:
     name = (platform_name or sys.platform).lower()
-    return name.startswith("win") or name.startswith("linux")
+    return name.startswith("win") or name.startswith("linux") or name == "darwin"
 
 
 def launch_argv(
@@ -50,6 +53,33 @@ def _desktop_exec(argv: Iterable[str]) -> str:
 def linux_autostart_path(*, config_home: Optional[str] = None) -> Path:
     base = config_home or os.getenv("XDG_CONFIG_HOME") or os.path.expanduser("~/.config")
     return Path(base) / "autostart" / LINUX_DESKTOP_FILE
+
+
+def macos_autostart_path(*, home_dir: Optional[str] = None) -> Path:
+    base = Path(home_dir or os.path.expanduser("~"))
+    return base / "Library" / "LaunchAgents" / MACOS_PLIST_FILE
+
+
+def _set_macos(enabled: bool, argv: list[str], *, home_dir: Optional[str] = None) -> None:
+    path = macos_autostart_path(home_dir=home_dir)
+    if not enabled:
+        path.unlink(missing_ok=True)
+        return
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "Label": MACOS_PLIST_LABEL,
+        "ProgramArguments": [str(arg) for arg in argv],
+        "RunAtLoad": True,
+        "KeepAlive": False,
+        "ProcessType": "Interactive",
+    }
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    with open(tmp, "wb") as handle:
+        plistlib.dump(payload, handle, fmt=plistlib.FMT_XML, sort_keys=True)
+        handle.flush()
+        os.fsync(handle.fileno())
+    os.replace(tmp, path)
 
 
 def _set_windows(enabled: bool, argv: list[str], *, winreg_module=None) -> None:
@@ -97,6 +127,7 @@ def set_enabled(
     argv: Optional[list[str]] = None,
     config_home: Optional[str] = None,
     winreg_module=None,
+    home_dir: Optional[str] = None,
 ) -> None:
     """Enable or disable per-user startup without administrator privileges."""
     name = (platform_name or sys.platform).lower()
@@ -106,5 +137,8 @@ def set_enabled(
         return
     if name.startswith("linux"):
         _set_linux(bool(enabled), command, config_home=config_home)
+        return
+    if name == "darwin":
+        _set_macos(bool(enabled), command, home_dir=home_dir)
         return
     raise OSError("automatic startup is not supported on this platform")
