@@ -702,3 +702,15 @@ def test_a_schedule_that_cannot_be_written_does_not_orphan_the_recording(tmp_pat
     active = scheduler.get_job("job1")
     assert active["status"] == dvr.STATUS_RECORDING
     assert active["recording_id"] == 7
+
+def test_program_episode_key_normalizes_xmltv_ns_totals():
+    assert dvr.program_episode_key({"episode": "1/16.3/25.1/2"}) == "ep:2x4"
+    assert dvr.program_episode_key({"episode": "1/15.3/24"}) == "ep:2x4"
+    assert dvr.program_episode_key({"episode": "0 . 12/13 . 0/3"}) == "ep:1x13"
+
+
+def test_program_episode_key_matches_onscreen_equivalent_with_xmltv_totals():
+    assert dvr.program_episode_key({"episode": "1/16.3/25.1/2"}) == dvr.program_episode_key(
+        {"episode": "S02E04"}
+    )
+
