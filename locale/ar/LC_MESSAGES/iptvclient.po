@@ -4552,3 +4552,15 @@ msgstr "~{value} ميغابت/ث"
 msgid "◄ Back"
 msgstr "◄ رجوع"
 
+
+msgid "Start with System"
+msgstr "بدء التشغيل مع النظام"
+
+msgid "Start Minimized"
+msgstr "بدء التشغيل مصغرًا"
+
+msgid "Could not change automatic startup: {error}"
+msgstr "تعذر تغيير بدء التشغيل التلقائي: {error}"
+
+msgid "Startup"
+msgstr "بدء التشغيل"
