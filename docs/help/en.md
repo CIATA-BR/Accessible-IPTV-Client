@@ -378,6 +378,8 @@ The Options menu holds the program's settings. Each one is saved as soon as you 
 - Preferred Audio Track: see Preferred audio track.
 - Language: see Language.
 - Minimize to System Tray: see System tray.
+- Start with System: on Windows and Linux, start Accessible IPTV Client automatically when you sign in. This is per user and needs no administrator permission.
+- Start Minimized: start directly in the system tray instead of showing the main window. This is independent of what later happens when you minimize or close the window.
 - Show Player on Enter: when on, playing a channel shows the built-in player window. When off, playback starts and focus stays in the channel list.
 - Show Stream URL: adds the Stream URL field after the episode description in the main window.
 - Auto-check for Updates: see Updates.
@@ -393,7 +395,7 @@ The program is available in English, Spanish, Arabic, Brazilian Portuguese, Fren
 
 ### System tray {#system-tray}
 
-When Options > Minimize to System Tray is on, closing or minimizing the main window hides it in the notification area instead of exiting, so scheduled recordings keep running. Activate the tray icon to bring the window back. Its menu also has Restore, Player Controls, Stop Recording(s) while something is recording, and Exit. Exit uses the same confirmation as closing the window: every waiting recording is named with its scheduled local time, so you can cancel the exit rather than accidentally skipping it.
+When Options > Minimize to System Tray is on, closing or minimizing the main window hides it in the notification area instead of exiting, so scheduled recordings keep running. Options > Start Minimized starts there immediately without first showing or focusing the main window. On Windows and Linux, Options > Start with System registers the app only for your user account so it can be ready for scheduled recordings after sign-in. Activate the tray icon to bring the window back. Its menu also has Restore, Player Controls, Stop Recording(s) while something is recording, and Exit. Exit uses the same confirmation as closing the window: every waiting recording is named with its scheduled local time, so you can cancel the exit rather than accidentally skipping it.
 
 To quit the program completely, use File > Exit (Ctrl+Q).
 
