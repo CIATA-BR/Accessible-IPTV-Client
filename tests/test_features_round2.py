@@ -167,6 +167,29 @@ def test_metadata_save_failure_cannot_remove_a_recording(tmp_path, monkeypatch, 
     assert path.read_bytes() == b'media fixture'
 
 
+def test_failed_restore_rolls_back_recording_index(tmp_path, monkeypatch):
+    path, row = recording(tmp_path)
+    library.trash(tmp_path, row)
+    trashed = library.scan_trash(tmp_path)[0]
+
+    monkeypatch.setattr(library.os, "link", lambda *_args: (_ for _ in ()).throw(OSError("no links")))
+
+    real_open = open
+    def fail_destination(name, mode="r", *args, **kwargs):
+        if str(name) == str(path) and "x" in mode:
+            raise OSError("disk full")
+        return real_open(name, mode, *args, **kwargs)
+
+    monkeypatch.setattr("builtins.open", fail_destination)
+
+    with pytest.raises(OSError, match="disk full"):
+        library.restore(tmp_path, trashed)
+
+    assert not path.exists()
+    assert len(library.scan_trash(tmp_path)) == 1
+    assert library._read(tmp_path) == {}
+
+
 def test_trash_move_failure_leaves_original_and_no_false_deleted_row(tmp_path, monkeypatch):
     path, row = recording(tmp_path)
     original_replace = library.os.replace
