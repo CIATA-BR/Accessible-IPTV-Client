@@ -269,7 +269,19 @@ class DVRScheduler:
             for job in jobs:
                 if not isinstance(job, dict) or not job.get("id"):
                     continue
-                if job.get("status") in {STATUS_RECORDING, STATUS_STOPPING}:
+                status = job.get("status")
+                if status in ACTIVE_STATUSES:
+                    start_ts = _number(job.get("start_ts"))
+                    stop_ts = _number(job.get("stop_ts"))
+                    if start_ts <= 0 or stop_ts <= start_ts:
+                        # Keep the row visible so the user can inspect/delete it,
+                        # but never leave a malformed active job scheduled forever.
+                        job["recording_id"] = None
+                        job["status"] = STATUS_FAILED
+                        job["message"] = job.get("message") or "Invalid recording schedule."
+                        self._jobs[str(job["id"])] = job
+                        continue
+                if status in {STATUS_RECORDING, STATUS_STOPPING}:
                     # The ffmpeg process died with the app, so the job is no longer
                     # running whatever the file says. Re-arm it when its window is
                     # still open (tick() restarts it, or marks it missed once the
