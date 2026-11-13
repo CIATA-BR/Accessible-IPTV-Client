@@ -1,3 +1,4 @@
+from pathlib import Path
 """GUI-free tests for the per-media-type recording preferences (issue #33)."""
 
 import json
