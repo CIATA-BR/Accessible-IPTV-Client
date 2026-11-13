@@ -76,7 +76,7 @@ Casting works there too. Debian's `python3-pychromecast` is older than the app n
 sudo dpkg-reconfigure accessible-iptv-client
 ```
 
-There is no built-in updater on Linux — install the next `.deb` over the current one. Where your data lands on Linux is existing app behaviour that the package does not change: `iptvclient.conf` and `scheduled_recordings.json` go in your home directory, while the EPG database (`epg.db`), the playlist cache, and the EPG debug log go in your temp directory — so an imported guide is cleared whenever `/tmp` is, typically at reboot. Point `TMPDIR` somewhere persistent before launching if you want the guide to survive.
+There is no built-in updater on Linux — install the next `.deb` over the current one. Persistent runtime data follows the XDG base-directory convention: the EPG database lives under `${XDG_DATA_HOME:-~/.local/share}/AccessibleIPTVClient`, the playlist cache under `${XDG_CACHE_HOME:-~/.cache}/AccessibleIPTVClient`, and diagnostic logs under `${XDG_STATE_HOME:-~/.local/state}/AccessibleIPTVClient/logs`. On first use, legacy EPG/cache/log data from the system temp directory is copied into these locations when possible, so imported guides survive a normal reboot. Truly temporary files such as IPC sockets and resumable download scratch files still use the system temp directory.
 
 **Other Linux**
 
