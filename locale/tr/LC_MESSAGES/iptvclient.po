@@ -4552,3 +4552,15 @@ msgstr "~{value} Mbps"
 msgid "◄ Back"
 msgstr "◄ Geri"
 
+
+msgid "Start with System"
+msgstr "Sistemle birlikte başlat"
+
+msgid "Start Minimized"
+msgstr "Küçültülmüş başlat"
+
+msgid "Could not change automatic startup: {error}"
+msgstr "Otomatik başlatma değiştirilemedi: {error}"
+
+msgid "Startup"
+msgstr "Başlangıç"
