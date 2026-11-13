@@ -43,7 +43,7 @@ msgstr "Já existe um marcador com este nome para este conteúdo."
 
 #: main.py:5737
 msgid "A download is still in progress.\n\nIf you exit now it will stop, and only the part captured so far is kept.\n\nExit anyway?"
-msgstr "Há uma descarga ou gravação em curso.\n\nSe sair agora, ela será interrompida e apenas a parte já capturada será mantida.\n\nSair mesmo assim?"
+msgstr "Há umo download ou gravação em andamento.\n\nSe sair agora, ela será interrompida e apenas a parte já capturada será mantida.\n\nSair mesmo assim?"
 
 #: favorite_collections.py:78
 msgid "A favourite list can contain at most 2000 channels."
@@ -60,11 +60,11 @@ msgstr "Já existe uma lista com este nome."
 
 #: main.py:5714
 msgid "A recording is in progress and {count} recording is still scheduled.\n\n{names}\n\nThe app must stay open to start them. Exit anyway?"
-msgstr "Está a decorrer uma gravação e {count} gravação continua agendada.\n\n{names}\n\nA aplicação tem de permanecer aberta para a iniciar. Sair na mesma?"
+msgstr "Está a decorrer uma gravação e {count} gravação continua agendada.\n\n{names}\n\nA aplicativo tem de permanecer aberta para a iniciar. Sair na mesma?"
 
 #: dvr.py:438
 msgid "A running recording's start time cannot be changed."
-msgstr "Não é possível alterar o início de uma gravação em curso."
+msgstr "Não é possível alterar o início de uma gravação em andamento."
 
 #: dialogs_misc.py:53
 msgid "A screen reader accessible IPTV client for Windows and Linux.\n\nSupports M3U/M3U Plus playlists, Stalker Portal, Xtream Codes, built-in VLC playback, casting, and XMLTV EPG."
@@ -228,7 +228,7 @@ msgstr "Usar também o EPG indicado por cada lista de reprodução"
 
 #: main.py:4769
 msgid "An update is already in progress."
-msgstr "Já existe uma atualização em curso."
+msgstr "Já existe uma atualização em andamento."
 
 #: main.py:7816
 msgid "Application voice output"
@@ -244,11 +244,11 @@ msgstr "Saída da voz do aplicativo: {name}"
 
 #: main.py:7772
 msgid "Application voice speed"
-msgstr "Velocidade da voz da aplicação"
+msgstr "Velocidade da voz da aplicativo"
 
 #: client_ui.py:417
 msgid "Application voice speed..."
-msgstr "Velocidade da voz da aplicação…"
+msgstr "Velocidade da voz da aplicativo…"
 
 #: main.py:7741
 msgid "Application voice volume"
@@ -664,7 +664,7 @@ msgstr "Verifique se as fontes de EPG em Arquivo > Gerenciador de EPG estão ace
 
 #: dialogs_misc.py:397
 msgid "Checking account, please wait..."
-msgstr "Verificando a conta, aguarde..."
+msgstr "Verificando a conta, asalve..."
 
 #: main.py:4948
 msgid "Checking for update details..."
@@ -833,7 +833,7 @@ msgstr "Copiar URL"
 
 #: main.py:7797
 msgid "Could not change the application voice speed."
-msgstr "Não foi possível alterar a velocidade da voz da aplicação."
+msgstr "Não foi possível alterar a velocidade da voz da aplicativo."
 
 #: resume_dialogs.py:145
 msgid "Could not check availability."
@@ -1104,11 +1104,11 @@ msgstr "Baixar e instalar agora? O aplicativo será reiniciado após a atualiza�
 
 #: main.py:8635
 msgid "Download canceled. The incomplete file was discarded."
-msgstr "Transferência cancelada. O ficheiro incompleto foi descartado."
+msgstr "Transferência cancelada. O arquivo incompleto foi descartado."
 
 #: main.py:8657
 msgid "Download complete:\n{path}"
-msgstr "Descarga concluída:\n{path}"
+msgstr "Download concluída:\n{path}"
 
 #: main.py:8927
 msgid "Download details"
@@ -1116,7 +1116,7 @@ msgstr "Detalhes da transferência"
 
 #: main.py:8647
 msgid "Download ended early:\n{path}\n\nOnly {written} of {expected} arrived before the provider closed the connection. The incomplete file was kept."
-msgstr "A descarga terminou mais cedo:\n{path}\n\nSó chegaram {written} de {expected} antes de o fornecedor fechar a ligação. O ficheiro incompleto foi mantido."
+msgstr "O download terminou mais cedo:\n{path}\n\nSó chegaram {written} de {expected} antes de o provedor fechar a conexão. O arquivo incompleto foi mantido."
 
 #: main.py:8965
 msgid "Download failed (code {code})."
@@ -1124,7 +1124,7 @@ msgstr "Falha no download (código {code})."
 
 #: main.py:8694
 msgid "Download failed (code {code}):\n{path}\n\n{detail}"
-msgstr "Falha na descarga (código {code}):\n{path}\n\n{detail}"
+msgstr "Falha no download (código {code}):\n{path}\n\n{detail}"
 
 #: main.py:8981
 msgid "Download failed - retrying (attempt {attempt} of {total}) in {seconds} seconds..."
@@ -1132,19 +1132,19 @@ msgstr "Download falhou - tentando novamente (tentativa {attempt} de {total}) em
 
 #: main.py:8691
 msgid "Download failed:\n{path}\n\n{reason}\n\n{detail}"
-msgstr "Falha na descarga:\n{path}\n\n{reason}\n\n{detail}"
+msgstr "Falha no download:\n{path}\n\n{reason}\n\n{detail}"
 
 #: main.py:5740
 msgid "Download in progress"
-msgstr "Descarga em curso"
+msgstr "Download em andamento"
 
 #: main.py:8926
 msgid "Download progress"
-msgstr "Progresso da descarga"
+msgstr "Progresso do download"
 
 #: main.py:8925
 msgid "Download status"
-msgstr "Estado da descarga"
+msgstr "Estado do download"
 
 #: main.py:4974
 #: main.py:5015
@@ -1242,7 +1242,7 @@ msgstr "Ativado"
 
 #: personal_tools_ui.py:606
 msgid "Encrypted backup saved, including recording schedules, reminders and saved searches."
-msgstr "Cópia encriptada guardada, incluindo gravações agendadas, lembretes e pesquisas guardadas."
+msgstr "Cópia criptografada guardada, incluindo gravações agendadas, lembretes e pesquisas salvas."
 
 #: personal_tools_ui.py:105
 msgid "End (local time, YYYY-MM-DD HH:MM)"
@@ -1272,11 +1272,11 @@ msgstr "Insira um número de canal:"
 
 #: manual_schedule.py:21
 msgid "Enter a local date and time as YYYY-MM-DD HH:MM."
-msgstr "Introduza a data e hora locais no formato AAAA-MM-DD HH:MM."
+msgstr "Digite a data e hora locais no formato AAAA-MM-DD HH:MM."
 
 #: favorite_collections.py:16
 msgid "Enter a name of 1 to 80 characters."
-msgstr "Introduza um nome com 1 a 80 caracteres."
+msgstr "Digite um nome com 1 a 80 caracteres."
 
 #: main.py:2084
 msgid "Enter a password for the settings backup:"
@@ -1292,7 +1292,7 @@ msgstr "Digite um título de gravação com 1 a 240 caracteres."
 
 #: saved_searches.py:54
 msgid "Enter a search of 2 to 100 characters and choose at most 2000 channels."
-msgstr "Introduza uma pesquisa com 2 a 100 caracteres e escolha até 2000 canais."
+msgstr "Digite uma pesquisa com 2 a 100 caracteres e escolha até 2000 canais."
 
 #: main.py:2157
 msgid "Enter a shortcut (leave blank to restore the default):"
@@ -1300,7 +1300,7 @@ msgstr "Insira um atalho (deixe em branco para restaurar o padrão):"
 
 #: manual_schedule.py:58
 msgid "Enter a title of 1 to 240 characters."
-msgstr "Introduza um título com 1 a 240 caracteres."
+msgstr "Digite um título com 1 a 240 caracteres."
 
 #: options.py:991
 msgid "Enter player executable or path:"
@@ -1309,7 +1309,7 @@ msgstr "Digite o executável ou o caminho do reprodutor:"
 #: media_navigation.py:12
 #: media_navigation_ui.py:97
 msgid "Enter seconds, MM:SS or HH:MM:SS."
-msgstr "Introduza segundos, MM:SS ou HH:MM:SS."
+msgstr "Digite segundos, MM:SS ou HH:MM:SS."
 
 #: main.py:2097
 msgid "Enter the password again:"
@@ -1405,7 +1405,7 @@ msgstr "Exportar configurações..."
 
 #: internal_player.py:2675
 msgid "External subtitle files are not synchronized with the local live buffer. Use the stream's embedded subtitles."
-msgstr "Os ficheiros de legendas externos não estão sincronizados com a memória intermédia local do direto. Utilize as legendas integradas na transmissão."
+msgstr "Os arquivos de legendas externos não estão sincronizados com a buffer local do direto. Utilize as legendas integradas na transmissão."
 
 #: main.py:5017
 msgid "Extracting update..."
@@ -1739,7 +1739,7 @@ msgstr "Manter este dispositivo de saída?\n{name}"
 
 #: C:/forgejo-runner/work/0d9a583ddfbd6034/hostexecutor/client_timeshift.py:48
 msgid "Keep up to this many minutes of live TV (1–30); 0 disables the local buffer."
-msgstr "Conservar entre 1 e 30 minutos do direto; 0 desativa a memória intermédia local."
+msgstr "Conservar entre 1 e 30 minutos do direto; 0 desativa a buffer local."
 
 #: main.py:2133
 #: main.py:2143
@@ -1882,7 +1882,7 @@ msgstr "Conexões máximas"
 
 #: C:/forgejo-runner/work/0d9a583ddfbd6034/hostexecutor/client_timeshift.py:66
 msgid "Maximum local buffer size per session (MiB). Old data is removed when either limit is reached."
-msgstr "Tamanho máximo da memória intermédia por sessão (MiB). Os dados mais antigos são eliminados ao atingir qualquer um dos limites."
+msgstr "Tamanho máximo da buffer por sessão (MiB). Os dados mais antigos são eliminados ao atingir qualquer um dos limites."
 
 #: client_ui.py:179
 #: client_ui.py:335
@@ -2142,7 +2142,7 @@ msgstr "Nenhum programa no ar no momento."
 
 #: main.py:2872
 msgid "No programme guide has been imported yet, so there is nothing to schedule from.\n\nImport a guide first (File > EPG Manager, then File > Import EPG to DB), then try scheduling again."
-msgstr "Ainda não foi importada nenhuma guia de programas, por isso não há nada para agendar.\n\nImporte primeiro uma guia (Ficheiro > Gestor de EPG, depois Ficheiro > Importar EPG para a base de dados) e tente novamente."
+msgstr "Ainda não foi importada nenhum guia de programação, por isso não há nada para agendar.\n\nImporte primeiro um guia (Arquivo > Gerenciador de EPG, depois Arquivo > Importar EPG para a base de dados) e tente novamente."
 
 #: main.py:7016
 msgid "No programs are currently airing, or EPG data has not been imported yet."
@@ -2200,7 +2200,7 @@ msgstr "Nenhum texto de legenda encontrado neste arquivo."
 
 #: internal_player.py:2854
 msgid "No subtitle text to read. Load a supported subtitle file."
-msgstr "Não há texto de legendas para ler. Carregue um ficheiro num formato suportado."
+msgstr "Não há texto de legendas para ler. Carregue um arquivo num formato suportado."
 
 #: main.py:9095
 msgid "No timed problems were found in the newest recording log."
@@ -2363,7 +2363,7 @@ msgstr "Senha opcional da conta do portal"
 
 #: playlist.py:3650
 msgid "Optional portal account username"
-msgstr "Nome de utilizador opcional da conta do portal"
+msgstr "Nome de usuário opcional da conta do portal"
 
 #: client_ui.py:444
 msgid "Options"
@@ -2597,7 +2597,7 @@ msgstr "Nomes de faixa ou idiomas preferidos, o mais desejado primeiro:"
 
 #: main.py:8896
 msgid "Preparing download..."
-msgstr "A preparar a descarga..."
+msgstr "A preparar o download..."
 
 #: main.py:4992
 #: main.py:5046
@@ -2888,7 +2888,7 @@ msgstr "Agendamento da gravação guardado."
 
 #: main.py:3352
 msgid "Recording scheduled.\n\nThe programme guide has not been imported yet, so the Scheduled Recordings window may not list anything, and this may be the only episode you can schedule. Import the guide from File > Import EPG to DB to see and schedule upcoming programmes."
-msgstr "Gravação agendada.\n\nA guia de programas ainda não foi importada, pelo que a janela de gravações agendadas pode não listar nada, e esta pode ser a única episódio que consegue agendar. Importe a guia em Ficheiro > Importar EPG para a base de dados para ver e agendar programas futuros."
+msgstr "Gravação agendada.\n\nO guia de programação ainda não foi importada, por isso a janela de gravações agendadas pode não listar nada, e este pode ser o único episódio que consegue agendar. Importe o guia em Arquivo > Importar EPG para a base de dados para ver e agendar programas futuros."
 
 #: accessible_tools_ui.py:542
 msgid "Recording space is critically low ({free} MiB). The {count} recording(s) on this drive are being stopped safely.\n{path}"
@@ -3032,7 +3032,7 @@ msgstr "Mudar nome..."
 
 #: personal_tools_ui.py:620
 msgid "Replace settings, {jobs} recording entries and {reminders} reminders? Started recordings will not restart."
-msgstr "Substituir definições, {jobs} entradas de gravação e {reminders} lembretes? As gravações já iniciadas não serão reiniciadas."
+msgstr "Substituir configurações, {jobs} entradas de gravação e {reminders} lembretes? As gravações já iniciadas não serão reiniciadas."
 
 #: main.py:818
 msgid "Restore"
@@ -3081,11 +3081,11 @@ msgstr "Pesquisa de programas guardada"
 #: personal_tools_ui.py:314
 #: personal_tools_ui.py:315
 msgid "Saved Programme Searches"
-msgstr "Pesquisas de programas guardadas"
+msgstr "Pesquisas de programas salvas"
 
 #: personal_tools_ui.py:459
 msgid "Saved Programme Searches..."
-msgstr "Pesquisas de programas guardadas..."
+msgstr "Pesquisas de programas salvas..."
 
 #: resume_dialogs.py:38
 msgid "Saved playback positions"
@@ -3265,7 +3265,7 @@ msgstr "Selecione uma conta para verificar o status:"
 
 #: main.py:9193
 msgid "Select one pending or running recording to edit its times."
-msgstr "Selecione uma gravação pendente ou em curso para editar os horários."
+msgstr "Selecione uma gravação pendente ou em andamento para editar os horários."
 
 #: internal_player.py:132
 msgid "Select the audio output device for the built-in player."
@@ -3308,7 +3308,7 @@ msgstr "Fuso horário do servidor"
 
 #: main.py:4603
 msgid "Set Download Folder..."
-msgstr "Definir pasta de descarga..."
+msgstr "Definir pasta de download..."
 
 #: dialogs_misc.py:1095
 #: main.py:2794
@@ -3320,7 +3320,7 @@ msgstr "Definir lembrete…"
 
 #: main.py:4328
 msgid "Set download folder"
-msgstr "Definir pasta de descarga"
+msgstr "Definir pasta de download"
 
 #: main.py:962
 #: main.py:2085
@@ -3513,7 +3513,7 @@ msgstr "Parar abaixo de (MiB):"
 
 #: internal_player.py:3265
 msgid "Stop built-in playback after 1–1440 minutes; enter 0 to cancel the timer."
-msgstr "Parar a reprodução integrada após 1–1440 minutos; introduza 0 para cancelar o temporizador."
+msgstr "Parar a reprodução integrada após 1–1440 minutos; digite 0 para cancelar o temporizador."
 
 #: C:/forgejo-runner/work/0d9a583ddfbd6034/hostexecutor/client_timeshift.py:98
 msgid "Stop local buffered playback before switching to a cast device."
@@ -3620,7 +3620,7 @@ msgstr "A leitura de legendas falhou."
 
 #: internal_player.py:2707
 msgid "Subtitle speech needs a supported text subtitle file."
-msgstr "A leitura requer um ficheiro de legendas de texto suportado."
+msgstr "A leitura requer um arquivo de legendas de texto suportado."
 
 #: internal_player.py:2898
 msgid "Subtitle speech off"
@@ -3632,7 +3632,7 @@ msgstr "Leitura de legendas ativada"
 
 #: internal_player.py:2902
 msgid "Subtitle speech on. Load a subtitle file to hear subtitles."
-msgstr "Leitura de legendas ativada. Carregue um ficheiro de legendas para as ouvir."
+msgstr "Leitura de legendas ativada. Carregue um arquivo de legendas para ouvi-las."
 
 #: main.py:7691
 msgid "Subtitle speech paused: the selected audio output is unavailable."
@@ -3678,15 +3678,15 @@ msgstr "Não foi possível iniciar a importação do EPG."
 
 #: main.py:6843
 msgid "The EPG import did not finish. The programme guide may be incomplete or unchanged."
-msgstr "A importação do EPG não foi concluída. A guia de programação pode estar incompleta ou inalterada."
+msgstr "A importação do EPG não foi concluída. O guia de programação pode estar incompleta ou inalterada."
 
 #: main.py:6839
 msgid "The EPG import has finished. The programme guide is up to date."
-msgstr "A importação do EPG foi concluída. A guia de programação está atualizada."
+msgstr "A importação do EPG foi concluída. O guia de programação está atualizada."
 
 #: personal_tools_ui.py:623
 msgid "The app will close. Open it again to finish restoring the backup."
-msgstr "A aplicação será fechada. Abra-a novamente para concluir o restauro."
+msgstr "A aplicativo será fechada. Abra-a novamente para concluir o restauro."
 
 #: main.py:7726
 msgid "The application voice is only available on Windows with SAPI."
@@ -3751,19 +3751,19 @@ msgstr "A biblioteca pode conter até 20 pastas."
 
 #: main.py:3544
 msgid "The live buffer is switching sources. The scheduled recording could not start."
-msgstr "A memória intermédia do direto está a mudar de origem. Não foi possível iniciar a gravação agendada."
+msgstr "A buffer do direto está a mudar de origem. Não foi possível iniciar a gravação agendada."
 
 #: C:/forgejo-runner/work/0d9a583ddfbd6034/hostexecutor/client_timeshift.py:60
 msgid "The local buffer is still feeding a recording. Stop the recording before disabling it."
-msgstr "A memória intermédia local ainda alimenta uma gravação. Pare-a antes de desativar esta função."
+msgstr "A buffer local ainda alimenta uma gravação. Pare-a antes de desativar esta função."
 
 #: C:/forgejo-runner/work/0d9a583ddfbd6034/hostexecutor/client_timeshift.py:312
 msgid "The local buffer stopped because its storage or input failed."
-msgstr "A memória intermédia local parou devido a uma falha de armazenamento ou da origem."
+msgstr "A buffer local parou devido a uma falha de armazenamento ou da origem."
 
 #: C:/forgejo-runner/work/0d9a583ddfbd6034/hostexecutor/client_timeshift.py:231
 msgid "The local live buffer could not start. No extra provider connection was opened. Disable the buffer to retry direct playback."
-msgstr "Não foi possível iniciar a memória intermédia local. Não foi aberta uma ligação adicional ao fornecedor. Desative esta função para tentar novamente a reprodução direta."
+msgstr "Não foi possível iniciar a buffer local. Não foi aberta uma conexão adicional ao provedor. Desative esta função para tentar novamente a reprodução direta."
 
 #: favorite_collections.py:52
 msgid "The maximum number of favourite lists is 50."
@@ -3845,7 +3845,7 @@ msgstr "O provedor não tem este programa (HTTP 404 Not Found). Ele pode ser mai
 
 #: catchup_urls.py:71
 msgid "The provider refused access (HTTP 403 Forbidden). Many providers allow only one stream per account at a time: stop other playback or downloads from this account and try again."
-msgstr "O provedor recusou o acesso (HTTP 403 Forbidden). Muitos provedores permitem apenas um stream por conta de cada vez: pare outras reproduções ou descargas desta conta e tente novamente."
+msgstr "O provedor recusou o acesso (HTTP 403 Forbidden). Muitos provedores permitem apenas um stream por conta de cada vez: pare outras reproduções ou downloads desta conta e tente novamente."
 
 #: catchup_urls.py:82
 msgid "The provider rejected the request (HTTP 4xx error)."
@@ -3921,7 +3921,7 @@ msgstr "Não foi possível restaurar a posição de reprodução guardada."
 #: saved_searches.py:150
 #: saved_searches.py:160
 msgid "The saved search history is damaged."
-msgstr "O histórico de pesquisas guardadas está danificado."
+msgstr "O histórico de pesquisas salvas está danificado."
 
 #: main.py:7708
 msgid "The selected audio output is unavailable. Subtitle speech is paused."
@@ -3977,7 +3977,7 @@ msgstr "Esta entrada não pode ser adicionada aos favoritos."
 
 #: main.py:8157
 msgid "This is a catch-up stream. Use Download in the catch-up list to save it."
-msgstr "Esta é uma transmissão de catch-up. Use Transferir na lista de catch-up para a guardar."
+msgstr "Esta é uma transmissão de catch-up. Use Transferir na lista de catch-up para a salvar."
 
 #: main.py:7836
 msgid "This is the application voice."
@@ -3993,7 +3993,7 @@ msgstr "Esta hora local ocorre duas vezes na mudança de hora."
 
 #: personal_tools_ui.py:621
 msgid "This older backup replaces settings only. Recording schedules and reminders will be kept."
-msgstr "Esta cópia antiga substitui apenas as definições. As gravações agendadas e os lembretes serão mantidos."
+msgstr "Esta cópia antiga substitui apenas as configurações. As gravações agendadas e os lembretes serão mantidos."
 
 #: recording_limits.py:81
 msgid "This overlaps {count} recording(s). Continue?"
@@ -4396,7 +4396,7 @@ msgstr "Sim"
 
 #: personal_tools_ui.py:376
 msgid "You can save up to 30 programme searches."
-msgstr "Pode guardar até 30 pesquisas de programas."
+msgstr "Pode salvar até 30 pesquisas de programas."
 
 #: main.py:1967
 msgid "You have not added any favorites yet. Select a channel and press Ctrl+D to add it."
@@ -4456,7 +4456,7 @@ msgstr "Recodificação x264 (MP4)"
 
 #: main.py:9586
 msgid "{app} is already running, but it did not respond. Wait a moment and try again, or close it from the notification area."
-msgstr "O {app} já está em execução, mas não respondeu. Aguarde um momento e tente novamente, ou feche-o pela área de notificação."
+msgstr "O {app} já está em execução, mas não respondeu. Asalve um momento e tente novamente, ou feche-o pela área de notificação."
 
 #: main.py:4806
 msgid "{app} is up to date (v{version})."
@@ -4477,7 +4477,7 @@ msgstr "{count} programas"
 
 #: main.py:5720
 msgid "{count} recording is scheduled but has not started yet.\n\n{names}\n\nThe app must stay open to start it. Exit anyway?"
-msgstr "{count} gravação está agendada mas ainda não começou.\n\n{names}\n\nA aplicação tem de permanecer aberta para a iniciar. Sair na mesma?"
+msgstr "{count} gravação está agendada mas ainda não começou.\n\n{names}\n\nA aplicativo tem de permanecer aberta para a iniciar. Sair na mesma?"
 
 #: accessible_tools_ui.py:327
 msgid "{count} recording(s). Active recordings are not listed."
