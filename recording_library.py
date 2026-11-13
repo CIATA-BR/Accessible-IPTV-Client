@@ -21,11 +21,23 @@ _EXTENSIONS = {".mkv", ".mp4", ".ts", ".mts", ".m2ts", ".mp3", ".m4a", ".aac",
 
 
 def _read(directory):
+    path = Path(directory) / _INDEX
     try:
-        with open(Path(directory) / _INDEX, encoding="utf-8") as handle:
+        with open(path, encoding="utf-8") as handle:
             value = json.load(handle)
-        return value if isinstance(value, dict) else {}
+        if not isinstance(value, dict):
+            raise ValueError("recording index is not a JSON object")
+        return value
+    except FileNotFoundError:
+        return {}
     except (OSError, ValueError):
+        backup = path.with_name(path.name + ".corrupt-" + uuid.uuid4().hex)
+        try:
+            os.replace(path, backup)
+        except OSError:
+            LOG.exception("Could not preserve corrupt recording index: %s", path)
+            raise
+        LOG.warning("Preserved corrupt recording index at %s", backup)
         return {}
 
 
