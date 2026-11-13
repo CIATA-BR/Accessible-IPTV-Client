@@ -209,31 +209,42 @@ def restore(directory, row):
         if destination.exists() or destination.is_symlink():
             raise FileExistsError(_("A file with this name already exists in the recording folder."))
         index = _read(destination.parent)
+        original_index = dict(index)
         index[destination.name] = {key: row[key] for key in ("title", "channel", "duration", "status", "size", "modified_ns")}
         _write(destination.parent, index)
-        # Hard-link creation is exclusive; fall back to an exclusive copy on
-        # filesystems without links. All large work runs in the dialog worker.
         try:
-            os.link(path, destination)
-        except FileExistsError:
-            raise
-        except OSError:
-            import shutil
-            with open(destination, "xb") as target:
-                try:
-                    with open(path, "rb") as source:
-                        shutil.copyfileobj(source, target)
-                    target.flush()
-                    os.fsync(target.fileno())
-                    os.utime(destination, ns=(path.stat().st_atime_ns, row["modified_ns"]))
-                except Exception:
-                    target.close()
-                    destination.unlink(missing_ok=True)
-                    raise
-        try:
-            path.unlink()
-        except OSError:
-            destination.unlink()
+            # Hard-link creation is exclusive; fall back to an exclusive copy on
+            # filesystems without links. All large work runs in the dialog worker.
+            try:
+                os.link(path, destination)
+            except FileExistsError:
+                raise
+            except OSError:
+                import shutil
+                with open(destination, "xb") as target:
+                    try:
+                        with open(path, "rb") as source:
+                            shutil.copyfileobj(source, target)
+                        target.flush()
+                        os.fsync(target.fileno())
+                        os.utime(destination, ns=(path.stat().st_atime_ns, row["modified_ns"]))
+                    except Exception:
+                        target.close()
+                        destination.unlink(missing_ok=True)
+                        raise
+            try:
+                path.unlink()
+            except OSError:
+                destination.unlink()
+                raise
+        except Exception:
+            # Restore the metadata journal too. Otherwise a failed media restore
+            # can leave a stale row that may later match a different file with
+            # the same name/signature.
+            try:
+                _write(destination.parent, original_index)
+            except OSError:
+                LOG.exception("Could not roll back recording index after restore failure")
             raise
         _cleanup_trash_folder(folder)
 
