@@ -52,7 +52,7 @@ from options import (
     get_recordings_dir, get_dvr_schedule_path, get_logs_dir, get_epg_log_path,
     normalize_recording_format, announce_event_enabled, coerce_channel_audio_tracks,
     coerce_channel_audio_track_indices, MAX_AUDIO_TRACKS,
-    is_windows_installed_build, get_user_config_dir, atomic_write_text
+    is_windows_installed_build, get_user_config_dir, atomic_write_text, cache_file_is_fresh
 )
 # Same normalization the EPG database indexes with - importing it from anywhere
 # else is how the UI and the database drift apart.
