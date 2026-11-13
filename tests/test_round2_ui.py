@@ -10,6 +10,7 @@ import wx
 import accessible_tools_ui
 import episode_continuation_ui
 import named_bookmarks
+import planning_ui
 import recording_limits_ui
 import session_tools_ui
 
@@ -68,6 +69,72 @@ def test_notification_history_is_accessible_and_refreshes_without_mutating_it(ow
         assert len(owner._notification_history) == 1
     finally:
         dialog.Destroy()
+
+
+def test_failed_reminder_delivery_remains_eligible_for_retry(monkeypatch):
+    row = {
+        "id": "reminder-1",
+        "start": 2_000_000_000,
+        "end": 2_000_003_600,
+        "lead": 5,
+        "status": "ready",
+        "title": "Programme",
+        "channel": "Channel",
+        "channel_key": "a" * 64,
+    }
+
+    class Store:
+        def __init__(self):
+            self.fail = True
+            self.acknowledged = 0
+
+        def due(self):
+            return [dict(row)]
+
+        def list(self):
+            return [dict(row)]
+
+        def acknowledge(self, key):
+            self.acknowledged += 1
+            assert key == row["id"]
+            if self.fail:
+                raise OSError("disk full")
+
+    class Dialog:
+        def SetYesNoLabels(self, *_args):
+            pass
+
+        def Destroy(self):
+            pass
+
+    store = Store()
+    owner = SimpleNamespace(
+        _reminders_stopped=False,
+        _reminder_seen=set(),
+        _reminder_errors_after=0,
+        _reminder_error_reported=False,
+        all_channels=[],
+    )
+    owner._ensure_reminders = lambda: store
+    owner._modal_box_is_open = lambda: False
+    owner._show_or_queue_message_box = lambda *_args, **_kwargs: None
+    owner._play_live_channel = lambda _channel: None
+    owner._reminder_modal_open = planning_ui.PlanningMixin._reminder_modal_open.__get__(owner)
+    owner._poll_reminders = planning_ui.PlanningMixin._poll_reminders.__get__(owner)
+
+    monkeypatch.setattr(planning_ui.wx, "GetTopLevelWindows", lambda: [])
+    monkeypatch.setattr(planning_ui.wx, "MessageDialog", lambda *_args, **_kwargs: Dialog())
+    monkeypatch.setattr(planning_ui, "show_modal", lambda _dialog: planning_ui.wx.ID_NO)
+
+    owner._poll_reminders()
+    assert row["id"] not in owner._reminder_seen
+    assert store.acknowledged == 1
+
+    store.fail = False
+    owner._reminder_errors_after = 0
+    owner._poll_reminders()
+    assert row["id"] in owner._reminder_seen
+    assert store.acknowledged == 2
 
 
 def test_stale_natural_end_callback_cannot_use_the_new_episode():
