@@ -98,7 +98,7 @@ Os favoritos mantêm em um só lugar os canais que você mais assiste. Pressione
 
 Para remover um favorito, pressione Ctrl+D nele de novo, ou pressione Delete na categoria Favoritos.
 
-Os favoritos são guardados por provedor e canal, não por endereço de transmissão, então sobrevivem a uma atualização da lista. Nada da sua conta é guardado com eles.
+Os favoritos são salvos por provedor e canal, não por endereço de transmissão, então sobrevivem a uma atualização da lista. Nada da sua conta é guardado com eles.
 
 Ver > Assistidos recentemente lista os canais que você reproduziu. Ver > Canal Anterior (Ctrl+0) volta para o canal que você assistiu antes deste.
 
@@ -245,7 +245,7 @@ Uma faixa que você escolhe é lembrada para aquele canal e volta na próxima ve
 
 O texto da legenda aparece no vídeo quando o stream o fornece. Reprodução > Carregar arquivo de legenda aceita um arquivo de legenda externo. Ative Reprodução > Ler legendas em voz alta (Shift+S) e a voz selecionada lerá cada legenda de um arquivo SRT, ASS, SSA ou WebVTT carregado assim que ela aparecer, também com a janela do player oculta. A legenda atual também é mostrada como texto no final dos controles do player. O player integrado ainda não pode ler em voz alta as legendas incluídas no próprio stream.
 
-Reprodução > Ler a legenda atual (C) lê a legenda que está na tela, ou a última mostrada quando não há nenhuma na tela. Reprodução > Legenda anterior (Page Up) e Próxima legenda (Page Down) percorrem as legendas já mostradas, para você ouvir de novo uma linha que perdeu. Elas nunca leem à frente da reprodução e funcionam com Ler legendas em voz alta ativado ou desativado. No Windows, Opções > Leitura de legendas > Velocidade da voz da aplicação… permite escolher um valor de -10 a 10; 0 é normal. Isso não altera a velocidade de reprodução nem as configurações do leitor de tela.
+Reprodução > Ler a legenda atual (C) lê a legenda que está na tela, ou a última mostrada quando não há nenhuma na tela. Reprodução > Legenda anterior (Page Up) e Próxima legenda (Page Down) percorrem as legendas já mostradas, para você ouvir de novo uma linha que perdeu. Elas nunca leem à frente da reprodução e funcionam com Ler legendas em voz alta ativado ou desativado. No Windows, Opções > Leitura de legendas > Velocidade da voz da aplicativo… permite escolher um valor de -10 a 10; 0 é normal. Isso não altera a velocidade de reprodução nem as configurações do leitor de tela.
 ### Dispositivo de saída de áudio {#audio-output-device}
 
 Reprodução > Dispositivo de saída de áudio… (D) escolhe os alto-falantes ou fones que o reprodutor usa, por exemplo para manter o som da TV longe do seu leitor de tela. Predefinido do sistema segue o dispositivo predefinido do Windows. A escolha é lembrada.
@@ -284,8 +284,8 @@ O programa pode gravar qualquer canal para um arquivo enquanto você assiste out
 - Gravações > Iniciar gravação (Ctrl+Shift+R) grava o canal destacado. Pressionado de novo, ela para.
 - Gravar no menu de um canal faz o mesmo, e Gravar no reprodutor integrado (Ctrl+R) grava o que você está assistindo.
 - Gravações > Parar gravação para a gravação do canal destacado, e Parar todas as gravações para todas.
-- Gravações > Abrir pasta de gravações abre a pasta onde os arquivos são guardados.
-- Gravações > Definir pasta de descarga… escolhe essa pasta. As transferências de replay também vão para lá.
+- Gravações > Abrir pasta de gravações abre a pasta onde os arquivos são salvos.
+- Gravações > Definir pasta de download… escolhe essa pasta. As transferências de replay também vão para lá.
 - Cada gravação escreve um arquivo de registro na pasta logs, dentro da pasta de gravações. Se uma gravação terminar com um aviso ou erro, a mensagem inclui um resumo das linhas de aviso, erro e erro fatal encontradas no registro. Abra o registro para ver os detalhes. O registro termina com um resumo: quanto a gravação deveria durar, quanto durou de fato e todos os avisos e erros agrupados por tipo, com os momentos em que ocorreram.
 
 Gravar o que você está assistindo no reprodutor integrado usa a mesma conexão com o provedor, então funciona mesmo com contas que permitem só um fluxo por vez.
@@ -471,10 +471,10 @@ Ajuda > Sobre… mostra a versão em uso e linka ambos. Ao relatar um problema, 
 
 Mantenha o aplicativo aberto para gravações agendadas, lembretes e alertas de pesquisas salvas. Lembretes e alertas de pesquisa não reativam o computador. As gravações podem solicitar um temporizador de ativação no Windows se a opção descrita em Gravações agendadas estiver ativada.
 
-- Gravações > Agendar por horário funciona sem guia. Introduza a hora local como AAAA-MM-DD HH:MM e escolha a ocorrência na mudança de hora. Editar horários altera uma gravação pendente ou o fim de uma em curso. Confirme conflitos de conexão conforme Gravações agendadas; duração máxima de sete dias.
-- Na reprodução a pedido, Ctrl+Left/Right salta 10 segundos, Ctrl+Shift+Left/Right 60 segundos, Ctrl+T abre a escolha do instante e T anuncia o tempo decorrido, total e restante. Os atalhos são configuráveis. O fluxo deve permitir saltos e ter duração conhecida; a reprodução em direto não muda.
-- Ver > Listas de favoritos gere até 50 listas com nome e 2000 canais por lista, separadas dos favoritos existentes. Selecione um canal antes de abrir a janela para o adicionar. Mover para cima/baixo ou Ctrl+Up/Down altera a ordem. Canais ausentes ficam na lista, mas só podem ser reproduzidos quando regressarem.
-- Ver > Pesquisas de programas guardadas guarda até 30 pesquisas em títulos ou descrições, em todos os canais, no selecionado ou numa cópia dos canais de uma lista de favoritos. Após importar o guia e a cada 15 minutos pesquisa os próximos 14 dias. Cada pesquisa mostra até 500 resultados; restrinja pesquisas truncadas. As definições de anúncios controlam os novos resultados, que permitem criar lembretes ou gravações.
-- A exportação encriptada inclui agendamentos, lembretes e histórico de pesquisa, sem ficheiros multimédia. A importação mostra quantos elementos substituirá e fecha a aplicação; volte a abri-la para terminar. Termine antes gravações e transferências. Gravações passadas ou já iniciadas não reiniciam. Cópias antigas só substituem definições e mantêm agendamentos e lembretes locais.
+- Gravações > Agendar por horário funciona sem guia. Digite a hora local como AAAA-MM-DD HH:MM e escolha a ocorrência na mudança de hora. Editar horários altera uma gravação pendente ou o fim de uma em andamento. Confirme conflitos de conexão conforme Gravações agendadas; duração máxima de sete dias.
+- Na reprodução a pedido, Ctrl+Left/Right salta 10 segundos, Ctrl+Shift+Left/Right 60 segundos, Ctrl+T abre a escolha do instante e T anuncia o tempo decorrido, total e restante. Os atalhos são configuráveis. O fluxo deve permitir saltos e ter duração conhecida; a reprodução ao vivo não muda.
+- Ver > Listas de favoritos gerencia até 50 listas com nome e 2000 canais por lista, separadas dos favoritos existentes. Selecione um canal antes de abrir a janela para o adicionar. Mover para cima/baixo ou Ctrl+Up/Down altera a ordem. Canais ausentes ficam na lista, mas só podem ser reproduzidos quando voltarem.
+- Ver > Pesquisas de programas salvas guarda até 30 pesquisas em títulos ou descrições, em todos os canais, no selecionado ou numa cópia dos canais de uma lista de favoritos. Após importar o guia e a cada 15 minutos pesquisa os próximos 14 dias. Cada pesquisa mostra até 500 resultados; restrinja pesquisas truncadas. As configurações de anúncios controlam os novos resultados, que permitem criar lembretes ou gravações.
+- A exportação criptografada inclui agendamentos, lembretes e histórico de pesquisa, sem arquivos de mídia. A importação mostra quantos elementos substituirá e fecha a aplicativo; volte a abri-la para terminar. Termine antes gravações e transferências. Gravações passadas ou já iniciadas não reiniciam. Cópias antigas só substituem configurações e mantêm agendamentos e lembretes locais.
 
 Exibir > Histórico de notificações mantém as últimas 200 notificações enfileiradas na sessão atual. Selecione uma entrada para ler Detalhes; Atualizar recarrega a lista e Copiar detalhes copia o texto. Credenciais reconhecíveis em URLs e linhas de autenticação são ocultadas no histórico e no texto copiado. Isso não garante que qualquer mensagem esteja livre de dados privados. Limpar histórico pede confirmação. O histórico é descartado ao fechar o aplicativo; os arquivos de log existentes não são alterados.
