@@ -173,6 +173,56 @@ def _linux_state_dir(*, create: bool = True) -> str:
     return _xdg_app_dir("XDG_STATE_HOME", "~/.local/state", create=create)
 
 
+def _mac_app_dir(base: str, *, create: bool = True) -> str:
+    path = os.path.join(os.path.expanduser(base), APP_DATA_DIR_NAME)
+    if create:
+        os.makedirs(path, exist_ok=True)
+    return path
+
+
+def _mac_data_dir(*, create: bool = True) -> str:
+    return _mac_app_dir("~/Library/Application Support", create=create)
+
+
+def _mac_cache_dir(*, create: bool = True) -> str:
+    return _mac_app_dir("~/Library/Caches", create=create)
+
+
+def _mac_logs_dir(*, create: bool = True) -> str:
+    return _mac_app_dir("~/Library/Logs", create=create)
+
+
+def _copy_legacy_macos_runtime_data() -> None:
+    """Preserve macOS EPG/cache/log data previously stored in the temp dir."""
+    if sys.platform != "darwin":
+        return
+    temp_dir = tempfile.gettempdir()
+    data_dir = _mac_data_dir()
+    cache_dir = _mac_cache_dir()
+    # Do not pre-create the log destination: _copy_tree_if_missing() only
+    # copies when the destination does not exist.
+    logs_dir = _mac_logs_dir(create=False)
+
+    for suffix in ("", "-wal", "-shm", "-journal"):
+        name = EPG_DB_FILE + suffix
+        _copy_file_if_missing(os.path.join(temp_dir, name), os.path.join(data_dir, name))
+
+    _copy_tree_if_missing(
+        os.path.join(temp_dir, CACHE_DIR_NAME),
+        os.path.join(cache_dir, CACHE_DIR_NAME),
+    )
+
+    legacy_logs = os.path.join(temp_dir, LOG_DIR_NAME)
+    if os.path.isdir(legacy_logs):
+        _copy_tree_if_missing(legacy_logs, logs_dir)
+    else:
+        os.makedirs(logs_dir, exist_ok=True)
+    _copy_file_if_missing(
+        os.path.join(temp_dir, EPG_DEBUG_LOG_FILE),
+        os.path.join(logs_dir, EPG_DEBUG_LOG_FILE),
+    )
+
+
 def _copy_legacy_linux_runtime_data() -> None:
     """Preserve EPG/cache/log data previously stored in the system temp dir."""
     if _is_windows_platform() or sys.platform == "darwin":
@@ -714,7 +764,12 @@ def get_cache_dir():
     if _is_windows_platform():
         cache_dir = os.path.join(get_user_config_dir(), CACHE_DIR_NAME)
     elif sys.platform == "darwin":
-        cache_dir = os.path.join(tempfile.gettempdir(), CACHE_DIR_NAME)
+        try:
+            _copy_legacy_macos_runtime_data()
+            cache_dir = os.path.join(_mac_cache_dir(), CACHE_DIR_NAME)
+        except OSError:
+            LOG.debug("get_cache_dir: persistent macOS cache dir unavailable, using temp", exc_info=True)
+            cache_dir = os.path.join(tempfile.gettempdir(), CACHE_DIR_NAME)
     else:
         try:
             _copy_legacy_linux_runtime_data()
@@ -988,7 +1043,12 @@ def get_logs_dir() -> str:
     if _is_windows_platform():
         base = get_user_config_dir()
     elif sys.platform == "darwin":
-        base = tempfile.gettempdir()
+        try:
+            _copy_legacy_macos_runtime_data()
+            return _mac_logs_dir()
+        except OSError:
+            LOG.debug("get_logs_dir: persistent macOS logs dir unavailable, using temp", exc_info=True)
+            base = tempfile.gettempdir()
     else:
         try:
             _copy_legacy_linux_runtime_data()
@@ -1008,7 +1068,12 @@ def get_db_path():
     if _is_windows_platform():
         return os.path.join(get_user_config_dir(), EPG_DB_FILE)
     if sys.platform == "darwin":
-        return os.path.join(tempfile.gettempdir(), EPG_DB_FILE)
+        try:
+            _copy_legacy_macos_runtime_data()
+            return os.path.join(_mac_data_dir(), EPG_DB_FILE)
+        except OSError:
+            LOG.debug("get_db_path: persistent macOS data dir unavailable, using temp", exc_info=True)
+            return os.path.join(tempfile.gettempdir(), EPG_DB_FILE)
     try:
         _copy_legacy_linux_runtime_data()
         return os.path.join(_linux_data_dir(), EPG_DB_FILE)
@@ -1022,7 +1087,7 @@ def get_epg_log_path():
     # Keep existing diagnostic history visible after introducing the dedicated
     # logs folder. Copy, rather than move, so a failed migration never loses it.
     legacy = os.path.join(
-        get_user_config_dir() if (_is_windows_platform() or sys.platform == "darwin") else tempfile.gettempdir(),
+        get_user_config_dir() if _is_windows_platform() else tempfile.gettempdir(),
         EPG_DEBUG_LOG_FILE,
     )
     if legacy != path and os.path.isfile(legacy) and not os.path.exists(path):

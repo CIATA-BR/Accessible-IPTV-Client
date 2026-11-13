@@ -142,7 +142,7 @@ Recordings follow the same choice. An MP3, or any other audio-only recording, ho
 
 ## EPG notes
 
-- During EPG import, a detailed log is written to `iptvclient_epg_debug.log` — in `%APPDATA%\AccessibleIPTVClient` on Windows, or your system temp directory elsewhere.
+- During EPG import, a detailed log is written to `iptvclient_epg_debug.log` — under `%APPDATA%\\AccessibleIPTVClient` on Windows, `~/Library/Logs/AccessibleIPTVClient` on macOS, or the XDG state directory on Linux. On macOS the EPG database is kept under `~/Library/Application Support/AccessibleIPTVClient` and playlist cache under `~/Library/Caches/AccessibleIPTVClient`, so they survive normal reboots and temp cleanup.
 - `.xml.gz` guides are supported and go through a safe download/verify workflow.
 
 ## Built-in player buffering

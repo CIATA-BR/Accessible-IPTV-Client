@@ -239,6 +239,81 @@ def test_a_failed_config_write_leaves_no_temp_file(tmp_path, monkeypatch):
         "the failed write must not damage the config that was there"
 
 
+def _set_macos_test_paths(monkeypatch, tmp_path):
+    monkeypatch.setattr(options, "_IS_WINDOWS", False)
+    monkeypatch.setattr(options.sys, "platform", "darwin")
+    roots = {
+        "~/Library/Application Support": tmp_path / "Library" / "Application Support",
+        "~/Library/Caches": tmp_path / "Library" / "Caches",
+        "~/Library/Logs": tmp_path / "Library" / "Logs",
+    }
+    real_expanduser = options.os.path.expanduser
+    monkeypatch.setattr(
+        options.os.path,
+        "expanduser",
+        lambda value: str(roots[value]) if value in roots else real_expanduser(value),
+    )
+
+
+def test_macos_runtime_paths_are_persistent(monkeypatch, tmp_path):
+    _set_macos_test_paths(monkeypatch, tmp_path)
+    monkeypatch.setattr(options.tempfile, "gettempdir", lambda: str(tmp_path / "tmp"))
+
+    assert Path(options.get_db_path()) == (
+        tmp_path / "Library" / "Application Support" / "AccessibleIPTVClient" / "epg.db"
+    )
+    assert Path(options.get_cache_dir()) == (
+        tmp_path / "Library" / "Caches" / "AccessibleIPTVClient" / "iptv_cache"
+    )
+    assert Path(options.get_logs_dir()) == (
+        tmp_path / "Library" / "Logs" / "AccessibleIPTVClient"
+    )
+
+
+def test_macos_runtime_paths_copy_legacy_temp_data(monkeypatch, tmp_path):
+    _set_macos_test_paths(monkeypatch, tmp_path)
+    legacy = tmp_path / "tmp"
+    legacy.mkdir()
+    monkeypatch.setattr(options.tempfile, "gettempdir", lambda: str(legacy))
+
+    (legacy / "epg.db").write_bytes(b"sqlite")
+    old_cache = legacy / "iptv_cache"
+    old_cache.mkdir()
+    (old_cache / "playlist.m3u").write_text("#EXTM3U", encoding="utf-8")
+    old_logs = legacy / "logs"
+    old_logs.mkdir()
+    (old_logs / "iptvclient_epg_debug.log").write_text("old log", encoding="utf-8")
+    (old_logs / "app.log").write_text("diagnostic", encoding="utf-8")
+
+    db_path = Path(options.get_db_path())
+    cache_dir = Path(options.get_cache_dir())
+    logs_dir = Path(options.get_logs_dir())
+
+    assert db_path.read_bytes() == b"sqlite"
+    assert (cache_dir / "playlist.m3u").read_text(encoding="utf-8") == "#EXTM3U"
+    assert (logs_dir / "iptvclient_epg_debug.log").read_text(encoding="utf-8") == "old log"
+    assert (logs_dir / "app.log").read_text(encoding="utf-8") == "diagnostic"
+    assert (legacy / "epg.db").exists(), "migration must copy, not delete, legacy data"
+
+
+def test_macos_runtime_paths_fall_back_to_temp_when_library_unavailable(monkeypatch, tmp_path):
+    _set_macos_test_paths(monkeypatch, tmp_path)
+    legacy = tmp_path / "tmp"
+    legacy.mkdir()
+    monkeypatch.setattr(options.tempfile, "gettempdir", lambda: str(legacy))
+
+    def refuse(*_args, **_kwargs):
+        raise OSError("read only")
+
+    monkeypatch.setattr(options, "_mac_data_dir", refuse)
+    monkeypatch.setattr(options, "_mac_cache_dir", refuse)
+    monkeypatch.setattr(options, "_mac_logs_dir", refuse)
+
+    assert Path(options.get_db_path()) == legacy / "epg.db"
+    assert Path(options.get_cache_dir()) == legacy / "iptv_cache"
+    assert Path(options.get_logs_dir()) == legacy / "logs"
+
+
 def test_linux_runtime_paths_use_xdg_dirs(monkeypatch, tmp_path):
     monkeypatch.setattr(options, "_IS_WINDOWS", False)
     monkeypatch.setattr(options.sys, "platform", "linux")
