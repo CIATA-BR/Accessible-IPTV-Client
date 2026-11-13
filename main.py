@@ -2483,11 +2483,7 @@ class IPTVClient(AccessibleToolsMixin, PersonalToolsMixin, PlanningMixin, LiveBu
                     parsed_cache = self._parsed_cache_path_for_key(src)
                     result["valid_cache"] = cache_path
                     
-                    download = True
-                    if os.path.exists(cache_path):
-                        age = (datetime.datetime.now() - datetime.datetime.fromtimestamp(os.path.getmtime(cache_path))).total_seconds()
-                        if age < 15 * 60:
-                            download = False
+                    download = not cache_file_is_fresh(cache_path, max_age=15 * 60)
 
                     text = ""
                     if download:
