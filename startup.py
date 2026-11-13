@@ -39,6 +39,9 @@ def _windows_command(argv: Iterable[str]) -> str:
 def _desktop_exec(argv: Iterable[str]) -> str:
     # Desktop Entry Exec is not a shell command. Quote each path explicitly.
     def quote(value: str) -> str:
+        # Desktop Entry Exec treats % as a field-code introducer even inside
+        # quotes. Double literal percent signs before quoting paths.
+        value = value.replace("%", "%%")
         value = value.replace("\\", "\\\\").replace('"', '\\"')
         return '"' + value + '"'
     return " ".join(quote(str(arg)) for arg in argv)
