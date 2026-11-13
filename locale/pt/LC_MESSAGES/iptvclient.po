@@ -1008,15 +1008,15 @@ msgstr "Dias desde o vencimento"
 #: playlist.py:3174
 #: session_tools_ui.py:63
 msgid "Delete"
-msgstr "Eliminar"
+msgstr "Excluir"
 
 #: personal_tools_ui.py:151
 msgid "Delete List"
-msgstr "Eliminar lista"
+msgstr "Excluir lista"
 
 #: playlist.py:3445
 msgid "Delete Playlist"
-msgstr "Eliminar lista de reprodução"
+msgstr "Excluir lista de reprodução"
 
 #: accessible_tools_ui.py:356
 msgid "Delete Recording"
@@ -1032,15 +1032,15 @@ msgstr "Excluir o marcador '{name}'?"
 
 #: personal_tools_ui.py:215
 msgid "Delete favourite list '{name}'?"
-msgstr "Eliminar a lista de favoritos «{name}»?"
+msgstr "Excluir a lista de favoritos «{name}»?"
 
 #: personal_tools_ui.py:393
 msgid "Delete saved search '{name}'?"
-msgstr "Eliminar a pesquisa guardada «{name}»?"
+msgstr "Excluir a pesquisa guardada «{name}»?"
 
 #: playlist.py:3442
 msgid "Delete the playlist “{name}”?\n\nThis removes it from the list of playlists. It cannot be undone."
-msgstr "Eliminar a lista de reprodução «{name}»?\n\nSerá removida da lista de listas de reprodução. Não é possível anular esta ação."
+msgstr "Excluir a lista de reprodução «{name}»?\n\nSerá removida da lista de listas de reprodução. Não é possível anular esta ação."
 
 #: dialogs_misc.py:506
 #: main.py:9398
@@ -1837,15 +1837,15 @@ msgstr "Carregando gravações..."
 #: C:/forgejo-runner/work/0d9a583ddfbd6034/hostexecutor/client_timeshift.py:232
 #: C:/forgejo-runner/work/0d9a583ddfbd6034/hostexecutor/client_timeshift.py:288
 msgid "Local Live Buffer"
-msgstr "Memória intermédia local do direto"
+msgstr "Buffer local de transmissão ao vivo"
 
 #: internal_player.py:572
 msgid "Local Live Buffer..."
-msgstr "Memória intermédia local do direto…"
+msgstr "Buffer local de transmissão ao vivo…"
 
 #: main.py:4278
 msgid "Logs"
-msgstr "Registos"
+msgstr "Registros"
 
 #: playlist.py:3355
 msgid "M3U files"
@@ -1882,7 +1882,7 @@ msgstr "Conexões máximas"
 
 #: C:/forgejo-runner/work/0d9a583ddfbd6034/hostexecutor/client_timeshift.py:66
 msgid "Maximum local buffer size per session (MiB). Old data is removed when either limit is reached."
-msgstr "Tamanho máximo da buffer por sessão (MiB). Os dados mais antigos são eliminados ao atingir qualquer um dos limites."
+msgstr "Tamanho máximo da buffer por sessão (MiB). Os dados mais antigos são removidos ao atingir qualquer um dos limites."
 
 #: client_ui.py:179
 #: client_ui.py:335
@@ -2331,7 +2331,7 @@ msgstr "Abrir canal"
 #: client_ui.py:245
 #: client_ui.py:458
 msgid "Open Logs Folder"
-msgstr "Abrir pasta de registos"
+msgstr "Abrir pasta de registros"
 
 #: main.py:4601
 msgid "Open Recordings Folder"
@@ -3076,7 +3076,7 @@ msgstr "Salvar"
 
 #: personal_tools_ui.py:269
 msgid "Saved Programme Search"
-msgstr "Pesquisa de programas guardada"
+msgstr "Pesquisa de programas salva"
 
 #: personal_tools_ui.py:314
 #: personal_tools_ui.py:315
@@ -3209,7 +3209,7 @@ msgstr "A pesquisar programas..."
 
 #: C:/forgejo-runner/work/0d9a583ddfbd6034/hostexecutor/client_timeshift.py:261
 msgid "Seconds behind the latest buffered picture; 0 returns to live."
-msgstr "Segundos de atraso em relação à última imagem conservada; 0 regressa ao direto."
+msgstr "Segundos de atraso em relação à última imagem armazenada; 0 retorna ao vivo."
 
 #: C:/forgejo-runner/work/0d9a583ddfbd6034/hostexecutor/client_timeshift.py:261
 #: internal_player.py:3278
