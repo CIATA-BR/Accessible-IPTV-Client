@@ -62,6 +62,15 @@ def test_linux_autostart_writes_and_removes_desktop_entry(tmp_path):
     assert not path.exists()
 
 
+def test_linux_autostart_escapes_percent_field_codes(tmp_path):
+    argv = ["/opt/Accessible%20IPTV/iptv"]
+    startup.set_enabled(True, platform_name="linux", argv=argv, config_home=str(tmp_path))
+
+    path = tmp_path / "autostart" / startup.LINUX_DESKTOP_FILE
+    text = path.read_text(encoding="utf-8")
+    assert 'Exec="/opt/Accessible%%20IPTV/iptv"' in text
+
+
 def test_windows_autostart_uses_current_user_run_key():
     registry = _FakeWinreg()
     argv = [r"C:\Program Files\Accessible IPTV Client\iptv.exe"]
