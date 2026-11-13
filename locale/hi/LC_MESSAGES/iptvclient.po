@@ -4552,3 +4552,15 @@ msgstr "~{value} Mbps"
 msgid "◄ Back"
 msgstr "◄ वापस"
 
+
+msgid "Start with System"
+msgstr "सिस्टम के साथ शुरू करें"
+
+msgid "Start Minimized"
+msgstr "न्यूनतम करके शुरू करें"
+
+msgid "Could not change automatic startup: {error}"
+msgstr "स्वचालित स्टार्टअप बदला नहीं जा सका: {error}"
+
+msgid "Startup"
+msgstr "स्टार्टअप"

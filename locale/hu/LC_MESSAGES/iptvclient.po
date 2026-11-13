@@ -4552,3 +4552,15 @@ msgstr "Körülbelül {value} Mbps"
 msgid "◄ Back"
 msgstr "◄ Vissza"
 
+
+msgid "Start with System"
+msgstr "Indítás a rendszerrel"
+
+msgid "Start Minimized"
+msgstr "Indítás kis méretben"
+
+msgid "Could not change automatic startup: {error}"
+msgstr "Nem sikerült módosítani az automatikus indítást: {error}"
+
+msgid "Startup"
+msgstr "Indítás"

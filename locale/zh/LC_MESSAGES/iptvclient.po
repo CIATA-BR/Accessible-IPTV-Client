@@ -4552,3 +4552,15 @@ msgstr "~{value} Mbps"
 msgid "◄ Back"
 msgstr "◄ 返回"
 
+
+msgid "Start with System"
+msgstr "随系统启动"
+
+msgid "Start Minimized"
+msgstr "启动时最小化"
+
+msgid "Could not change automatic startup: {error}"
+msgstr "无法更改自动启动：{error}"
+
+msgid "Startup"
+msgstr "启动"

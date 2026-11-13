@@ -560,6 +560,8 @@ def load_config() -> Dict:
         "internal_player_max_buffer_seconds": DEFAULT_INTERNAL_PLAYER_MAX_BUFFER_SECONDS,
         "internal_player_variant_max_mbps": 0.0,
         "minimize_to_tray": False,
+        "start_with_system": False,
+        "start_minimized": False,
         "auto_check_updates": True,
         "epg_enabled": True,
         # Also import the guide a playlist names in its #EXTM3U header
