@@ -795,6 +795,17 @@ def get_cache_path_for_url(url):
     return os.path.join(get_cache_dir(), f"{h}.m3u")
 
 
+def cache_file_is_fresh(path: str, *, max_age: float = 900.0, now: float | None = None) -> bool:
+    """Return true only for an existing cache whose mtime is not in the future."""
+    try:
+        stamp = os.path.getmtime(path)
+    except OSError:
+        return False
+    current = time.time() if now is None else float(now)
+    age = current - stamp
+    return 0.0 <= age < float(max_age)
+
+
 def atomic_write_text(path: str, text: str, *, encoding: str = "utf-8") -> None:
     """Replace a text file only after the complete new contents are durable."""
     directory = os.path.dirname(os.path.abspath(path))
