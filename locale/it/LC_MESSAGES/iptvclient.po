@@ -4552,3 +4552,15 @@ msgstr "~{value} Mbps"
 msgid "◄ Back"
 msgstr "◄ Indietro"
 
+
+msgid "Start with System"
+msgstr "Avvia con il sistema"
+
+msgid "Start Minimized"
+msgstr "Avvia ridotto a icona"
+
+msgid "Could not change automatic startup: {error}"
+msgstr "Impossibile modificare l'avvio automatico: {error}"
+
+msgid "Startup"
+msgstr "Avvio"
