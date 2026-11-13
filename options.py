@@ -16,6 +16,7 @@ except ModuleNotFoundError:  # wxPython optional for headless helpers
     _HAS_WX = False
 from typing import Dict
 import tempfile
+import uuid
 
 from i18n import gettext as _
 import logging
@@ -682,7 +683,7 @@ def load_config() -> Dict:
                 # Keep the unreadable file: the first save would overwrite it,
                 # and the playlists and favourites in it would be gone for good.
                 try:
-                    kept = p + ".corrupt"
+                    kept = p + ".corrupt-" + uuid.uuid4().hex
                     shutil.copy2(p, kept)
                     _log_error(f"Kept a copy of the unreadable config at {kept}")
                 except Exception:
