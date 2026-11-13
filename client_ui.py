@@ -356,7 +356,7 @@ class UiMixin:
             om.AppendSubMenu(lang_menu, _("Language"))
             self.min_to_tray_item = om.AppendCheckItem(wx.ID_ANY, _("Minimize to System Tray"))
             self.start_with_system_item = None
-            if platform.system() in {"Windows", "Linux"}:
+            if platform.system() in {"Windows", "Linux", "Darwin"}:
                 self.start_with_system_item = om.AppendCheckItem(wx.ID_ANY, _("Start with System"))
             self.start_minimized_item = om.AppendCheckItem(wx.ID_ANY, _("Start Minimized"))
             self.show_player_on_enter_item = om.AppendCheckItem(wx.ID_ANY, _("Show Player on Enter"))
