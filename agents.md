@@ -69,13 +69,13 @@ Project = Accessible IPTV Client, a wxPython GUI focused on playlist loading, EP
 - Catch-up/timeshift playback for supported channels.
 - Provider account status (expiry, trial flag, connection limits) for configured and autodetected accounts, under File > Account Info.
 - Channel grouping, channel search, and EPG search.
-- System tray minimize/restore support.
+- System tray minimize/restore support, optional start minimized, and per-user automatic startup on Windows/Linux.
 - Windows packaged auto-update support.
 - Cross-platform source app support for Windows, Linux and macOS, with the release pipeline focused on Windows. The macOS app (`tools/build_macos.sh`, `main.spec` BUNDLE) bundles Homebrew's ffmpeg and VLC.app's libVLC and plugins; `main.py` puts the bundle on PATH and sets `PYTHON_VLC_LIB_PATH`/`PYTHON_VLC_MODULE_PATH` when frozen, because Finder-launched apps get no Homebrew PATH. The in-app updater stays Windows-only (macOS gets the existing "only supported on Windows builds" message). It is built only by the cloud release, on macOS runners.
 
 ## Config File (`iptvclient.conf`)
 
-Important keys include `playlists`, `epgs`, `media_player`, `custom_player_path`, `internal_player_buffer_seconds`, `internal_player_max_buffer_seconds`, `internal_player_variant_max_mbps`, `epg_enabled`, `epg_auto_import_interval_hours`, `minimize_to_tray`, `show_player_on_enter`, `auto_check_updates`, `favorites`, `preferred_audio_tracks`, `prefer_audio_description`, and `shutdown_after_recordings`.
+Important keys include `playlists`, `epgs`, `media_player`, `custom_player_path`, `internal_player_buffer_seconds`, `internal_player_max_buffer_seconds`, `internal_player_variant_max_mbps`, `epg_enabled`, `epg_auto_import_interval_hours`, `minimize_to_tray`, `start_with_system`, `start_minimized`, `show_player_on_enter`, `auto_check_updates`, `favorites`, `preferred_audio_tracks`, `prefer_audio_description`, and `shutdown_after_recordings`.
 
 `favorites` is a list of `favorites.channel_key()` strings, `preferred_audio_tracks` a list of track-name/language keywords in priority order. Both are clamped by `options.normalize_channel_and_audio_settings()` on every load and save, so a hand-edited config cannot crash startup.
 
