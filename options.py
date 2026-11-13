@@ -152,6 +152,54 @@ def _legacy_user_config_dir() -> str:
         return os.path.join(os.path.expanduser("~/Library/Application Support"), LEGACY_APP_DATA_DIR_NAME)
     return os.path.join(os.getenv("XDG_CONFIG_HOME", os.path.expanduser("~/.config")), LEGACY_APP_DATA_DIR_NAME)
 
+def _xdg_app_dir(env_name: str, default_base: str, *, create: bool = True) -> str:
+    """Return an XDG per-user directory for persistent Linux runtime data."""
+    base = os.getenv(env_name) or os.path.expanduser(default_base)
+    path = os.path.join(base, APP_DATA_DIR_NAME)
+    if create:
+        os.makedirs(path, exist_ok=True)
+    return path
+
+
+def _linux_data_dir(*, create: bool = True) -> str:
+    return _xdg_app_dir("XDG_DATA_HOME", "~/.local/share", create=create)
+
+
+def _linux_cache_dir(*, create: bool = True) -> str:
+    return _xdg_app_dir("XDG_CACHE_HOME", "~/.cache", create=create)
+
+
+def _linux_state_dir(*, create: bool = True) -> str:
+    return _xdg_app_dir("XDG_STATE_HOME", "~/.local/state", create=create)
+
+
+def _copy_legacy_linux_runtime_data() -> None:
+    """Preserve EPG/cache/log data previously stored in the system temp dir."""
+    if _is_windows_platform() or sys.platform == "darwin":
+        return
+    temp_dir = tempfile.gettempdir()
+    data_dir = _linux_data_dir()
+    cache_dir = _linux_cache_dir()
+    state_dir = _linux_state_dir()
+
+    for suffix in ("", "-wal", "-shm", "-journal"):
+        name = EPG_DB_FILE + suffix
+        _copy_file_if_missing(os.path.join(temp_dir, name), os.path.join(data_dir, name))
+
+    _copy_tree_if_missing(
+        os.path.join(temp_dir, CACHE_DIR_NAME),
+        os.path.join(cache_dir, CACHE_DIR_NAME),
+    )
+
+    legacy_logs = os.path.join(temp_dir, LOG_DIR_NAME)
+    if os.path.isdir(legacy_logs):
+        _copy_tree_if_missing(legacy_logs, os.path.join(state_dir, LOG_DIR_NAME))
+    _copy_file_if_missing(
+        os.path.join(temp_dir, EPG_DEBUG_LOG_FILE),
+        os.path.join(state_dir, LOG_DIR_NAME, EPG_DEBUG_LOG_FILE),
+    )
+
+
 
 def is_windows_installed_build() -> bool:
     """Return True for an Inno-installed frozen Windows build."""
@@ -663,8 +711,15 @@ def get_loaded_config_path() -> str:
 def get_cache_dir():
     if _is_windows_platform():
         cache_dir = os.path.join(get_user_config_dir(), CACHE_DIR_NAME)
-    else:
+    elif sys.platform == "darwin":
         cache_dir = os.path.join(tempfile.gettempdir(), CACHE_DIR_NAME)
+    else:
+        try:
+            _copy_legacy_linux_runtime_data()
+            cache_dir = os.path.join(_linux_cache_dir(), CACHE_DIR_NAME)
+        except OSError:
+            LOG.debug("get_cache_dir: persistent cache dir unavailable, using temp", exc_info=True)
+            cache_dir = os.path.join(tempfile.gettempdir(), CACHE_DIR_NAME)
     try:
         os.makedirs(cache_dir, exist_ok=True)
     except OSError:
@@ -928,7 +983,17 @@ def get_dvr_schedule_path() -> str:
 
 def get_logs_dir() -> str:
     """Return the user-writable folder containing application diagnostic logs."""
-    base = get_user_config_dir() if _is_windows_platform() else tempfile.gettempdir()
+    if _is_windows_platform():
+        base = get_user_config_dir()
+    elif sys.platform == "darwin":
+        base = tempfile.gettempdir()
+    else:
+        try:
+            _copy_legacy_linux_runtime_data()
+            base = _linux_state_dir()
+        except OSError:
+            LOG.debug("get_logs_dir: persistent state dir unavailable, using temp", exc_info=True)
+            base = tempfile.gettempdir()
     path = os.path.join(base, LOG_DIR_NAME)
     try:
         os.makedirs(path, exist_ok=True)
@@ -940,7 +1005,14 @@ def get_logs_dir() -> str:
 def get_db_path():
     if _is_windows_platform():
         return os.path.join(get_user_config_dir(), EPG_DB_FILE)
-    return os.path.join(tempfile.gettempdir(), EPG_DB_FILE)
+    if sys.platform == "darwin":
+        return os.path.join(tempfile.gettempdir(), EPG_DB_FILE)
+    try:
+        _copy_legacy_linux_runtime_data()
+        return os.path.join(_linux_data_dir(), EPG_DB_FILE)
+    except OSError:
+        LOG.debug("get_db_path: persistent data dir unavailable, using temp", exc_info=True)
+        return os.path.join(tempfile.gettempdir(), EPG_DB_FILE)
 
 
 def get_epg_log_path():
@@ -948,7 +1020,7 @@ def get_epg_log_path():
     # Keep existing diagnostic history visible after introducing the dedicated
     # logs folder. Copy, rather than move, so a failed migration never loses it.
     legacy = os.path.join(
-        get_user_config_dir() if _is_windows_platform() else tempfile.gettempdir(),
+        get_user_config_dir() if (_is_windows_platform() or sys.platform == "darwin") else tempfile.gettempdir(),
         EPG_DEBUG_LOG_FILE,
     )
     if legacy != path and os.path.isfile(legacy) and not os.path.exists(path):
