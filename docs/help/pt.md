@@ -369,6 +369,8 @@ O menu Opções contém as configurações do programa. Cada uma é salva assim 
 - Faixa de áudio preferida: veja Faixa de áudio preferida.
 - Idioma: veja Idioma.
 - Minimizar para a bandeja do sistema: veja Bandeja do sistema.
+- Iniciar com o sistema: no Windows e no Linux, inicia o Accessible IPTV Client automaticamente quando você entra na sua conta. A configuração vale apenas para o seu usuário e não exige permissão de administrador.
+- Iniciar minimizado: abre diretamente na bandeja do sistema, sem mostrar a janela principal. Esta opção é independente do que acontece depois quando você minimiza ou fecha a janela.
 - Mostrar o reprodutor ao pressionar Enter: ligado, reproduzir um canal mostra a janela do reprodutor integrado. Desligado, a reprodução começa e o foco fica na lista de canais.
 - Mostrar o URL da transmissão: adiciona o campo URL da transmissão depois da descrição do episódio na janela principal.
 - Verificar atualizações automaticamente: veja Atualizações.
@@ -384,7 +386,7 @@ O programa está disponível em inglês, espanhol, árabe, português do Brasil,
 
 ### Bandeja do sistema {#system-tray}
 
-Quando Opções > Minimizar para a bandeja do sistema está ligado, fechar ou minimizar a janela principal a esconde na área de notificação em vez de sair, então as gravações agendadas continuam. Ative o ícone da bandeja para trazer a janela de volta. O menu dele também tem Restaurar, Controles do reprodutor, Parar gravação(ões) enquanto algo grava, e Sair. Sair usa a mesma confirmação que fechar a janela: cada gravação em espera é listada com o horário local agendado, para que você possa cancelar a saída em vez de perdê-la sem querer.
+Quando Opções > Minimizar para a bandeja do sistema está ligado, fechar ou minimizar a janela principal a esconde na área de notificação em vez de sair, então as gravações agendadas continuam. Opções > Iniciar minimizado já abre o aplicativo na bandeja, sem mostrar nem focar primeiro a janela principal. No Windows e no Linux, Opções > Iniciar com o sistema registra o aplicativo apenas para a sua conta de usuário, deixando-o pronto para gravações agendadas depois que você entra no sistema. Ative o ícone da bandeja para trazer a janela de volta. O menu dele também tem Restaurar, Controles do reprodutor, Parar gravação(ões) enquanto algo grava, e Sair. Sair usa a mesma confirmação que fechar a janela: cada gravação em espera é listada com o horário local agendado, para que você possa cancelar a saída em vez de perdê-la sem querer.
 
 Para sair do programa por completo, use Arquivo > Sair (Ctrl+Q).
 
