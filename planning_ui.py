@@ -202,7 +202,6 @@ class PlanningMixin:
             row = next((r for r in due if r['id'] not in self._reminder_seen), None)
             if row is None:
                 return
-            self._reminder_seen.add(row['id'])
             start = datetime.datetime.fromtimestamp(row['start']).strftime('%Y-%m-%d %H:%M')
             text = _("{title}\n{channel}\nStarts: {time}").format(
                 title=row['title'] or _("(No title)"), channel=row['channel'], time=start)
@@ -214,6 +213,10 @@ class PlanningMixin:
             finally:
                 dialog.Destroy()
             self._ensure_reminders().acknowledge(row['id'])
+            # Only suppress repeat delivery after the acknowledgement was
+            # durably persisted. If the dialog or file write fails, the ready
+            # reminder must remain eligible for the next poll.
+            self._reminder_seen.add(row['id'])
             if play and not self._reminders_stopped:
                 channel = reminders.resolve_channel(row, self.all_channels)
                 if channel is None:
