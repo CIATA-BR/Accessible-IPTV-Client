@@ -236,3 +236,34 @@ def test_a_failed_config_write_leaves_no_temp_file(tmp_path, monkeypatch):
     assert not list(tmp_path.glob("*.tmp")), "the failed write left a temp file"
     assert json.loads(target.read_text(encoding="utf-8")).get("good") == 1, \
         "the failed write must not damage the config that was there"
+
+
+def test_an_infinite_announcement_level_does_not_discard_the_whole_config(tmp_path, monkeypatch):
+    """``1e400`` is valid JSON and parses to ``inf``; ``int(inf)`` raises
+    OverflowError, which was not handled, so the whole file looked corrupt and
+    the app started with no playlists or favourites."""
+    cfg_file = tmp_path / "iptvclient.conf"
+    cfg_file.write_text('{"playlists": ["https://example.invalid/list.m3u"], '
+                        '"favorites": ["remembered-key"], "announcement_level": 1e400}',
+                        encoding="utf-8")
+    monkeypatch.setattr(options, "get_config_read_candidates", lambda: [str(cfg_file)])
+    monkeypatch.setattr(options, "get_config_write_target", lambda: str(tmp_path / "written.conf"))
+
+    cfg = options.load_config()
+
+    assert cfg["announcement_level"] == 2
+    assert cfg["playlists"] == ["https://example.invalid/list.m3u"]
+    assert cfg["favorites"] == ["remembered-key"]
+    assert not (tmp_path / "iptvclient.conf.corrupt").exists()
+
+
+def test_saving_an_infinite_announcement_level_writes_the_default(tmp_path, monkeypatch):
+    """The same value escaped save_config as OverflowError, so the change never
+    reached disk."""
+    target = tmp_path / "iptvclient.conf"
+    monkeypatch.setattr(options, "get_config_write_target", lambda: str(target))
+
+    cfg = {"announcement_level": float("inf")}
+    assert options.save_config(cfg) is True
+    assert cfg["announcement_level"] == 2
+    assert json.loads(target.read_text(encoding="utf-8"))["announcement_level"] == 2

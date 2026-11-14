@@ -571,7 +571,10 @@ def load_config() -> Dict:
                 normalize_channel_and_audio_settings(data)
                 try:
                     data["announcement_level"] = max(0, min(3, int(data["announcement_level"])))
-                except (TypeError, ValueError):
+                except (TypeError, ValueError, OverflowError):
+                    # OverflowError comes from a float that overflows to
+                    # infinity (e.g. a hand-edited 1e400); it must not discard
+                    # the rest of the config as unreadable.
                     data["announcement_level"] = 2
                 normalize_announce_events(data)
                 resolve_internal_player_settings(data)
@@ -611,7 +614,7 @@ def _save_config_locked(cfg: Dict):
     normalize_channel_and_audio_settings(cfg)
     try:
         cfg["announcement_level"] = max(0, min(3, int(cfg.get("announcement_level", 2))))
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, OverflowError):
         cfg["announcement_level"] = 2
     normalize_announce_events(cfg)
     resolve_internal_player_settings(cfg)
