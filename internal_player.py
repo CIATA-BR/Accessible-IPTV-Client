@@ -1103,6 +1103,8 @@ class InternalPlayerFrame(MediaNavigationMixin, wx.Frame):
             coerced = float(value) if value is not None else float(fallback)
         except Exception:
             coerced = float(fallback)
+        if not math.isfinite(coerced):
+            coerced = float(fallback)
         return max(0.0, coerced)
 
     def _resolve_max_buffer(self, supplied: Optional[float], base_value: float) -> float:
@@ -1129,7 +1131,7 @@ class InternalPlayerFrame(MediaNavigationMixin, wx.Frame):
             cap = float(value)
         except Exception:
             return None
-        if cap <= 0:
+        if not math.isfinite(cap) or cap <= 0:
             return None
         return max(0.25, cap)
 

@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import math
 import hashlib
 import shutil
 from dataclasses import dataclass
@@ -405,7 +406,9 @@ def _apply_internal_player_bounds(cfg: Dict) -> None:
         max_val = float(max_val)
     except Exception:
         max_val = DEFAULT_INTERNAL_PLAYER_MAX_BUFFER_SECONDS
-    if max_val <= 0:
+    # NaN and infinities are not user choices: comparisons with them are False,
+    # so they used to slip past the range checks and reach libVLC as-is.
+    if not math.isfinite(max_val) or max_val <= 0:
         max_val = DEFAULT_INTERNAL_PLAYER_MAX_BUFFER_SECONDS
     # The old saved default must leave room for the live cushion to grow.
     if max_val == 18.0:
@@ -418,7 +421,7 @@ def _apply_internal_player_bounds(cfg: Dict) -> None:
         base_val = float(base_val)
     except Exception:
         base_val = DEFAULT_INTERNAL_PLAYER_BUFFER_SECONDS
-    if base_val <= 0:
+    if not math.isfinite(base_val) or base_val <= 0:
         base_val = DEFAULT_INTERNAL_PLAYER_BUFFER_SECONDS
     if base_val > max_val:
         base_val = max_val
@@ -429,7 +432,8 @@ def _apply_internal_player_bounds(cfg: Dict) -> None:
         variant_cap = float(variant_cap)
     except Exception:
         variant_cap = 0.0
-    if variant_cap <= 0.0:
+    # 0.0 is "no cap"; a non-finite cap is meaningless, not 0.25 Mbps.
+    if not math.isfinite(variant_cap) or variant_cap <= 0.0:
         variant_cap = 0.0
     else:
         variant_cap = max(0.25, min(variant_cap, 500.0))

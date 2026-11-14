@@ -60,6 +60,22 @@ def test_restart_after_a_stall_opens_on_the_full_cache():
     assert profile["network_ms"] == 25000
 
 
+def test_non_finite_maximum_leaves_a_usable_base_buffer():
+    """A NaN maximum used to survive the config bounds; the live buffer target
+    then became NaN and ``int(cache * 1000)`` raised. The maximum falls back to
+    its default, and the saved base is still the buffer the player asks for."""
+    cfg = {"internal_player_buffer_seconds": 12.0,
+           "internal_player_max_buffer_seconds": float("nan")}
+    options._apply_internal_player_bounds(cfg)
+    f = _Frame()
+    f.base_buffer_seconds = cfg["internal_player_buffer_seconds"]
+    f._max_buffer_seconds = cfg["internal_player_max_buffer_seconds"]
+    target, profile, _ = internal_player.InternalPlayerFrame._compute_buffer_profile(
+        f, "http://h/live/u/p/1.ts")
+    assert target == 12.0
+    assert profile["network_ms"] == 12000
+
+
 def test_dispatcharr_stall_does_not_raise_the_saved_buffer(monkeypatch):
     """Dispatcharr buffers server-side, so its channels keep the saved buffer:
     a stall reconnects without growing the client cache."""

@@ -81,6 +81,55 @@ def test_old_default_maximum_no_longer_caps_live_cushion(tmp_path, monkeypatch):
         assert options.load_config()["internal_player_max_buffer_seconds"] == expected
 
 
+def test_non_finite_maximum_falls_back_to_the_default():
+    """NaN compares False with <= and min(), so it used to reach the player."""
+    for maximum in (float("nan"), float("inf"), float("-inf")):
+        cfg = {"internal_player_buffer_seconds": 12.0,
+               "internal_player_max_buffer_seconds": maximum}
+        options._apply_internal_player_bounds(cfg)
+        assert cfg["internal_player_max_buffer_seconds"] == 30.0
+        # A finite saved base is still the user's choice beside a bad maximum.
+        assert cfg["internal_player_buffer_seconds"] == 12.0
+
+
+def test_non_finite_base_buffer_falls_back_to_the_default():
+    for base in (float("nan"), float("inf"), float("-inf")):
+        cfg = {"internal_player_buffer_seconds": base}
+        options._apply_internal_player_bounds(cfg)
+        assert cfg["internal_player_buffer_seconds"] == 25.0
+
+
+def test_non_finite_variant_cap_means_no_cap():
+    """A NaN cap used to collapse to 0.25 Mbps instead of the 0.0 no-limit value."""
+    for cap in (float("nan"), float("inf"), float("-inf")):
+        cfg = {"internal_player_variant_max_mbps": cap}
+        options._apply_internal_player_bounds(cfg)
+        assert cfg["internal_player_variant_max_mbps"] == 0.0
+
+
+def test_non_finite_saved_buffer_settings_are_repaired_and_not_written_back(
+        tmp_path, monkeypatch):
+    cfg_file = tmp_path / "config.json"
+    cfg_file.write_text(
+        '{"internal_player_buffer_seconds": NaN,'
+        ' "internal_player_max_buffer_seconds": Infinity,'
+        ' "internal_player_variant_max_mbps": -Infinity}',
+        encoding="utf-8")
+    monkeypatch.setattr(options, "get_config_read_candidates", lambda: [str(cfg_file)])
+    monkeypatch.setattr(options, "get_config_write_target", lambda: str(cfg_file))
+    cfg = options.load_config()
+    assert cfg["internal_player_buffer_seconds"] == 25.0
+    assert cfg["internal_player_max_buffer_seconds"] == 30.0
+    assert cfg["internal_player_variant_max_mbps"] == 0.0
+    options.save_config(cfg)
+    saved = options.load_config()
+    assert saved["internal_player_buffer_seconds"] == 25.0
+    assert saved["internal_player_max_buffer_seconds"] == 30.0
+    assert saved["internal_player_variant_max_mbps"] == 0.0
+    assert "NaN" not in cfg_file.read_text(encoding="utf-8")
+    assert "Infinity" not in cfg_file.read_text(encoding="utf-8")
+
+
 def test_load_config_keeps_existing_split_prefs(tmp_path, monkeypatch):
     cfg_file = tmp_path / "config.json"
     cfg_file.write_text(json.dumps({

@@ -84,6 +84,43 @@ def test_buffer_profile_preserves_retry_increase_and_maximum():
     assert profile['network_ms'] == 18000
 
 
+@pytest.mark.parametrize('value', [float('nan'), float('inf'), float('-inf')])
+def test_coerce_seconds_rejects_non_finite_values(value):
+    """NaN and infinities are not durations; the fallback is used instead."""
+    assert internal_player.InternalPlayerFrame._coerce_seconds(value, fallback=2.0) == 2.0
+
+
+def test_coerce_seconds_keeps_finite_values():
+    coerce = internal_player.InternalPlayerFrame._coerce_seconds
+    assert coerce(0.5, fallback=2.0) == 0.5
+    assert coerce(-1.0, fallback=2.0) == 0.0
+    assert coerce(None, fallback=4.0) == 4.0
+
+
+def test_resolve_max_buffer_rejects_a_non_finite_maximum():
+    frame = types.SimpleNamespace(
+        _coerce_seconds=internal_player.InternalPlayerFrame._coerce_seconds)
+    resolve = internal_player.InternalPlayerFrame._resolve_max_buffer
+    assert resolve(frame, float('nan'), 2.0) == 30.0
+    assert resolve(frame, float('inf'), 12.0) == 30.0
+    assert resolve(frame, 18.0, 12.0) == 18.0
+
+
+@pytest.mark.parametrize('value', [float('nan'), float('inf'), float('-inf')])
+def test_sanitize_variant_cap_rejects_non_finite_values(value):
+    """None means no cap; a NaN cap must not become the 0.25 Mbps floor."""
+    assert internal_player.InternalPlayerFrame._sanitize_variant_cap(value) is None
+
+
+def test_sanitize_variant_cap_keeps_finite_values():
+    sanitize = internal_player.InternalPlayerFrame._sanitize_variant_cap
+    assert sanitize(2.5) == 2.5
+    assert sanitize(0.1) == 0.25
+    assert sanitize(0.0) is None
+    assert sanitize(-1.0) is None
+    assert sanitize(None) is None
+
+
 class TestBufferProfile:
     """Test buffer profile calculations."""
 
