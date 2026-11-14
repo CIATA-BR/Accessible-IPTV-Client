@@ -1,5 +1,9 @@
 # Recording and catch-up
 
+## Shutdown recording gate, 2026-11-14
+
+- `RecordingManager.begin_shutdown()` is the explicit exit gate; `stop_all()` must not close it, because "Stop All Recordings" has to leave recording enabled for the rest of the session. The gate is checked at the top of `start()` and again under `_lock` in the block that registers the recording. `IPTVClient._release_recordings_on_exit` calls it before its first `list_active()`: a start either aborts itself (kill and reap ffmpeg, release path, connection key and buffer lease, raise `RecordingAborted`) or is registered and visible to `stop_all`. Do not move that check outside the registration lock, and do not hide a recorder without the method with `getattr`: a start in flight is the only way an ffmpeg can appear after the exit snapshot.
+
 ## Reliability and recording tools, 2026-11-12
 
 - User-initiated cancellation, deletion and repeat edits persist a proposal before changing memory. Runtime state transitions retain their existing best-effort save behavior so a write failure does not lose management of a running FFmpeg process. Cancellation stops the recording using the fresh post-cancel id/key, including a concurrent scheduled start.

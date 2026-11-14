@@ -4101,6 +4101,13 @@ class IPTVClient(AccessibleToolsMixin, PersonalToolsMixin, PlanningMixin, LiveBu
         requires Task Manager intervention.
         """
         self._suppress_recording_notifications = True
+        # Close the start gate before taking the snapshot below. A recording
+        # whose ffmpeg launch is still in flight would otherwise register after
+        # this snapshot: stop_all would not see it, the wait loop would find
+        # nothing to wait for, and its ffmpeg would outlive the app holding the
+        # provider's stream. With the gate closed, that start kills its own
+        # process and raises instead.
+        self.recorder.begin_shutdown()
         active = self.recorder.list_active()
         # Waiting for FFmpeg to finalize takes 5 s + 15 s + 15 s per recording.
         # It used to happen on the GUI thread, so the still-visible window froze

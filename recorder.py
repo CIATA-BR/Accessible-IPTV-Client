@@ -42,6 +42,10 @@ RECORDING_FORMATS: "Dict[str, tuple]" = {
 
 DEFAULT_RECORDING_FORMAT = "provider_mkv"
 
+# Raised (as ``RecordingAborted``) when application shutdown refuses a start or
+# undoes one whose ffmpeg launch was already in flight.
+SHUTDOWN_ABORT_MESSAGE = "The application is shutting down; the recording was not started."
+
 # ffmpeg infers the output muxer from the filename extension. Download-style
 # captures write to a ``.part`` sibling while running, so the muxer has to be
 # forced explicitly (mapping: recording extension -> ffmpeg muxer name).
@@ -922,6 +926,10 @@ def probe_media_type(url: str, headers: Optional[Dict[str, object]] = None,
         probe_stream_report(url, headers, timeout=timeout, on_popen=on_popen))
 
 
+class RecordingAborted(RuntimeError):
+    """A recording start was refused or undone because the app is shutting down."""
+
+
 class Recording:
     """A single in-progress (or finished) recording."""
 
@@ -1002,6 +1010,9 @@ class RecordingManager:
         # Output paths chosen for recordings that are still starting.
         self._reserved_paths = set()
         self._next_id = 1
+        # Set by ``begin_shutdown``: from that point on no recording may start,
+        # including one whose ffmpeg launch is already in flight.
+        self._shutdown_started = False
         self._storage_gate = threading.RLock()
         self.storage_min_mib = recording_storage.DEFAULT_RESERVE_MIB
         self.storage_preferences = storage_monitor.settings({})
@@ -1029,6 +1040,19 @@ class RecordingManager:
             r.connection_key == connection_key for r in self.list_active()))
 
     # -- lifecycle ---------------------------------------------------------
+    def begin_shutdown(self) -> None:
+        """Refuse new recordings, and abort a start that is already in flight.
+
+        Application shutdown calls this before it takes its snapshot of active
+        recordings. A recording whose ffmpeg launch is already under way then
+        never gets registered after that snapshot, which is what used to leave
+        an orphaned ffmpeg holding the provider's stream. This is deliberately
+        not part of :meth:`stop_all`: stopping every recording on request must
+        not disable recording for the rest of the session.
+        """
+        with self._lock:
+            self._shutdown_started = True
+
     def start(
         self,
         url: str,
@@ -1056,6 +1080,11 @@ class RecordingManager:
             raise ValueError("No stream URL to record.")
         if fmt not in RECORDING_FORMATS:
             fmt = DEFAULT_RECORDING_FORMAT
+        with self._lock:
+            shutting_down = self._shutdown_started
+        if shutting_down:
+            # Refuse before touching the destination or launching ffmpeg.
+            raise RecordingAborted(SHUTDOWN_ABORT_MESSAGE)
 
         if not _storage_checked:
             # Serialize concurrent starts through validation and registration.
@@ -1186,8 +1215,18 @@ class RecordingManager:
                             connection_key=connection_key)
             rec.planned_seconds = _planned_seconds(duration, rec.metadata, rec.started_at)
             rec.buffer_lease = buffer_lease
-            self._recordings[rec_id] = rec
+            # The shutdown check and the registration share the lock on purpose:
+            # ``begin_shutdown`` either runs before this (the start is aborted
+            # below, so the exit snapshot never misses a live ffmpeg) or after
+            # the recording is registered (the exit's stop_all sees it).
+            shutting_down = self._shutdown_started
+            if not shutting_down:
+                self._recordings[rec_id] = rec
             self._reserved_connection_keys.discard(connection_key)
+        if shutting_down:
+            LOG.info("Discarding recording %s: the application is shutting down", out_path)
+            self._abandon_shutdown_start(rec)
+            raise RecordingAborted(SHUTDOWN_ABORT_MESSAGE)
         if share_with_player:
             from recording_relay import RecordingRelay
             try:
@@ -1267,7 +1306,8 @@ class RecordingManager:
         """Stop every active recording.
 
         ``detach`` is for application shutdown: FFmpeg gets a short clean-finalize
-        window, then is forcibly stopped if it remains alive.
+        window, then is forcibly stopped if it remains alive. This does not close
+        the start gate; only :meth:`begin_shutdown` does.
         """
         active = self.list_active()
         for rec in active:
@@ -1317,6 +1357,25 @@ class RecordingManager:
                 os.remove(rec.partial_path)
             except OSError:
                 LOG.debug("RecordingManager._abandon_start: ignored exception", exc_info=True)
+
+    def _abandon_shutdown_start(self, rec: Recording) -> None:
+        """Undo a start whose ffmpeg launch raced application shutdown.
+
+        The process may already be recording even though the start has not
+        registered it yet, so it has to be killed and reaped here; otherwise it
+        outlives the app and holds the provider's only stream slot. Every
+        reservation the start took (path, connection key, buffer lease) is
+        released as well.
+        """
+        self._abandon_start(rec)
+        lease = getattr(rec, "buffer_lease", None)
+        if lease is not None:
+            try:
+                lease.release()
+            except Exception:
+                LOG.exception("Could not release the buffer lease of aborted recording %s",
+                              rec.out_path)
+            rec.buffer_lease = None
 
     def _open_log(self, log_path: str, cmd: List[str], url: str):
         """Open the per-recording ffmpeg log, or return None if we cannot write one."""

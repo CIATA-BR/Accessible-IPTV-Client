@@ -1172,3 +1172,85 @@ def test_a_locked_target_keeps_the_finished_download(tmp_path, monkeypatch):
 
     assert partial.exists(), "the finished download was deleted"
     assert rec.out_path == str(partial)
+
+
+# --------------------------------------------------------------------------- #
+# The shutdown start gate
+# --------------------------------------------------------------------------- #
+class _StubLease:
+    """A live-buffer lease: the recorder has to hand it back on an aborted start."""
+
+    def __init__(self):
+        self.released = False
+
+    def release(self):
+        self.released = True
+
+
+def test_a_start_after_begin_shutdown_is_refused_before_ffmpeg_launches(tmp_path, monkeypatch):
+    launched = []
+    monkeypatch.setattr(recorder.subprocess, "Popen", lambda *_a, **_k: launched.append(True))
+    manager = recorder.RecordingManager()
+    manager.begin_shutdown()
+
+    with pytest.raises(recorder.RecordingAborted):
+        manager.start("http://host/live.ts", "Title", "provider_mkv", None, str(tmp_path),
+                      _storage_checked=True, _buffer_checked=True)
+
+    assert launched == []
+    assert manager.list_active() == []
+    assert manager._reserved_paths == set()
+
+
+def test_shutdown_between_popen_and_registration_kills_ffmpeg_and_releases_reservations(
+        tmp_path, monkeypatch):
+    """The window the exit gate has to cover: ffmpeg exists, the recording does not.
+
+    Closing the app there used to leave the recording unregistered, so the exit
+    snapshot missed it, stop_all had nothing to stop, and ffmpeg outlived the
+    app holding the provider's only stream slot. The gate is checked and the
+    recording registered under the same lock, so the start either aborts
+    itself or is visible to the exit's snapshot.
+    """
+    manager = recorder.RecordingManager()
+    lease = _StubLease()
+    proc = _StubProcess(exits_after_waits=99)
+
+    def popen_then_exit(*_args, **_kwargs):
+        # The app begins closing after ffmpeg has started but before the
+        # recording is registered, deterministically.
+        manager.begin_shutdown()
+        return proc
+
+    monkeypatch.setattr(recorder.subprocess, "Popen", popen_then_exit)
+
+    with pytest.raises(recorder.RecordingAborted):
+        manager.start(
+            "http://host/live.ts", "Title", "provider_mkv", None, str(tmp_path),
+            key="dvr:1", connection_key="provider.example",
+            _storage_checked=True, _buffer_checked=True, _buffer_lease=lease)
+
+    assert proc.killed, "the ffmpeg that won the race was left running"
+    assert lease.released, "the live-buffer lease was not released"
+    assert manager.list_active() == []
+    assert manager._recordings == {}
+    assert manager._reserved_connection_keys == set()
+    assert manager._reserved_paths == set()
+
+
+def test_stop_all_does_not_close_the_start_gate(tmp_path, monkeypatch):
+    """Stopping every recording is not application shutdown.
+
+    The gate has to be opened explicitly by begin_shutdown; otherwise "Stop All
+    Recordings" would silently disable recording for the rest of the session.
+    """
+    manager = recorder.RecordingManager()
+    manager.stop_all(wait=True)
+
+    started = []
+    monkeypatch.setattr(manager, "_start_reserved",
+                        lambda *_args, **_kwargs: started.append(True) or "started")
+
+    assert manager.start("http://host/live.ts", "Title", "provider_mkv", None,
+                         str(tmp_path), _storage_checked=True, _buffer_checked=True) == "started"
+    assert started == [True]

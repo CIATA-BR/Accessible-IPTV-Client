@@ -73,3 +73,35 @@ def test_a_running_download_alone_is_warned_about(monkeypatch):
 
     assert boxes == ["Download in progress"]
     assert event.vetoed
+
+
+def test_exit_closes_the_recording_gate_before_the_first_snapshot():
+    """A start still in flight must not register after the exit snapshot.
+
+    The snapshot, stop_all and the wait loop only see recordings that were
+    registered when they ran. A scheduled start can still be resolving its
+    stream at that point, so the gate has to be closed first: that start then
+    kills its own ffmpeg instead of registering an orphan after the snapshot.
+    """
+    calls = []
+
+    class _Recorder:
+        def begin_shutdown(self):
+            calls.append("begin_shutdown")
+
+        def list_active(self):
+            calls.append("list_active")
+            return []
+
+        def stop_all(self, **_kwargs):
+            calls.append("stop_all")
+            return 0
+
+    client = types.SimpleNamespace(recorder=_Recorder())
+
+    main.IPTVClient._release_recordings_on_exit(client)
+
+    first = calls.index("begin_shutdown")
+    assert all(index > first for index, name in enumerate(calls) if name != "begin_shutdown"), calls
+    assert "stop_all" in calls
+    assert client._suppress_recording_notifications is True

@@ -702,3 +702,61 @@ def test_a_schedule_that_cannot_be_written_does_not_orphan_the_recording(tmp_pat
     active = scheduler.get_job("job1")
     assert active["status"] == dvr.STATUS_RECORDING
     assert active["recording_id"] == 7
+
+
+def test_a_start_refused_by_the_shutdown_gate_leaves_no_recording_and_no_stuck_job(tmp_path):
+    """Closing the app while a scheduled start is in flight used to orphan ffmpeg.
+
+    The start resolves the stream URL and probes the channel for seconds. If
+    the user closes the app then, the recording manager's shutdown gate refuses
+    the start: nothing is launched, no active recording is left behind, and the
+    job must not be left "recording" (which would re-arm it at the next launch
+    and collide with an orphan holding the provider's only stream).
+    """
+    manager = recorder.RecordingManager()
+    now = [1010.0]
+    in_start = threading.Event()
+    release = threading.Event()
+    finished = threading.Event()
+
+    def on_start(job):
+        # The URL resolution and audio-track probe happen here; the exit can
+        # begin while they run.
+        in_start.set()
+        release.wait(10)
+        try:
+            return manager.start(
+                "http://example/stream", "DVR Test Channel", "provider_mkv", {},
+                str(tmp_path), key="dvr:{id}".format(id=job["id"]))
+        finally:
+            finished.set()
+
+    scheduler = dvr.DVRScheduler(
+        str(tmp_path / "schedule.json"),
+        on_start=on_start,
+        on_stop=lambda _job: None,
+        clock=lambda: now[0],
+        poll_seconds=1,
+    )
+    start = datetime.datetime.fromtimestamp(1010, datetime.timezone.utc)
+    end = datetime.datetime.fromtimestamp(1020, datetime.timezone.utc)
+    scheduler.add_job(dvr.build_job(
+        {"name": "DVR Test Channel", "url": "http://example/stream"},
+        _sample_program(start, end), "provider_mkv", job_id="job1"))
+
+    scheduler.tick()
+    assert in_start.wait(5), "the start never ran"
+
+    # The user closes the app while the start is still resolving the stream.
+    manager.begin_shutdown()
+    release.set()
+    assert finished.wait(5), "the start was not refused"
+
+    deadline = time.time() + 5
+    while scheduler.get_job("job1")["status"] == dvr.STATUS_RECORDING and time.time() < deadline:
+        time.sleep(0.05)
+
+    assert manager.list_active() == []
+    job = scheduler.get_job("job1")
+    assert job["status"] == dvr.STATUS_FAILED
+    assert "shutting down" in job["message"]
