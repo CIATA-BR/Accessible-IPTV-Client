@@ -184,6 +184,33 @@ def test_deleting_progress_disables_active_checkpoint_without_stopping_playback(
     assert active._resume_key == '' and instance.config['playback_bookmarks'] == {} and saved
 
 
+def test_a_failed_bookmark_save_keeps_the_entry_and_reports_the_failure():
+    # save_config reports failure by returning False, not by raising. The
+    # dialog is what a user drives, so exercise the callback it receives
+    # instead of making an exception escape its constructor.
+    item = movie()
+    callbacks = []
+    class Dialog:
+        def __init__(self, parent, config, save, resolve):
+            callbacks.append(save)
+        def ShowModal(self): return 0
+        def Destroy(self): pass
+    cls, _ = extract_class('main.py', 'IPTVClient', ['_show_continue_watching'], {
+        'playback_resume': resume, 'ContinueWatchingDialog': Dialog,
+        'XtreamCodesClient': Client, 'save_config': lambda config: False,
+        'wx': SimpleNamespace(ID_OK=1), 'show_modal': lambda dialog: dialog.ShowModal(),
+    })
+    instance = cls();instance.config = {'playback_bookmarks': record(item)}
+    instance._internal_player_frame = None
+    instance._playlist_load_token = 1
+    instance.all_channels = [];instance.vod_groups = {};instance.provider_clients = {}
+    instance._show_continue_watching()
+    assert len(callbacks) == 1
+    with pytest.raises(OSError):
+        callbacks[0]({})
+    assert resume.item_key(item) in instance.config['playback_bookmarks']
+
+
 def test_choice_dialog_maps_escape_to_cancel_and_has_explicit_beginning_label(monkeypatch):
     # Importing this UI module needs wx, but never instantiates a native window.
     import resume_dialogs
@@ -246,6 +273,21 @@ def test_cancelled_remove_clear_and_failed_save_keep_progress():
     def fail(entries): raise OSError('disk full')
     instance.save_entries=fail
     assert not instance._write({})
+    assert key in instance.config['playback_bookmarks']
+
+
+def test_a_failed_write_announces_once_and_returns_focus_to_the_list():
+    instance, env, key = dialog_model()
+    spoken, labels, focus = [], [], []
+    env['live_announce'] = SimpleNamespace(speak=spoken.append)
+    instance.status = SimpleNamespace(SetLabel=labels.append)
+    instance.list = SimpleNamespace(SetFocus=lambda: focus.append(True))
+    def fail(entries): raise OSError('disk full')
+    instance.save_entries = fail
+    assert instance._write({}) is False
+    assert labels == ['Could not save playback history changes.']
+    assert spoken == labels
+    assert focus == [True]
     assert key in instance.config['playback_bookmarks']
 
 

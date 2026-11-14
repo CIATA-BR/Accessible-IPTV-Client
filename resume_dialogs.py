@@ -158,7 +158,13 @@ class ContinueWatchingDialog(wx.Dialog):
         try:
             self.save_entries(entries)
         except Exception:
-            self.status.SetLabel(_("Could not save playback history changes."))
+            # save_entries signals failure by raising, and this dialog owns the
+            # single user-facing message: show and speak it once, then return
+            # focus to the list exactly as a successful write does.
+            status = _("Could not save playback history changes.")
+            self.status.SetLabel(status)
+            live_announce.speak(status)
+            self.list.SetFocus()
             return False
         self._generation += 1
         self._refresh()

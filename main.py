@@ -6357,7 +6357,12 @@ class IPTVClient(AccessibleToolsMixin, PersonalToolsMixin, PlanningMixin, LiveBu
             previous = self.config.get("playback_bookmarks", {})
             self.config["playback_bookmarks"] = entries
             try:
-                save_config(self.config)
+                # save_config reports a failed write by returning False, not by
+                # raising: treat it as failure so the removal is rolled back and
+                # the dialog reports it instead of showing it as saved. The
+                # dialog owns the user-facing wording; this text is diagnostic.
+                if save_config(self.config) is False:
+                    raise OSError("save_config reported a failed write")
             except Exception:
                 self.config["playback_bookmarks"] = previous
                 raise
